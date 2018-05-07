@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebGL Fundamentals</title>
+  </head>
+
+<body>
+<style>
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    border: 0px !important;
+  }
+</style>
+<canvas id="c"></canvas>
+<script type="text/javascript" src="../dat.gui.min.js"></script>
+
+   <script id="3d-vertex-shader" type="notjs">
+    // an attribute will receive data from a buffer
+    attribute vec4 a_position;
+    attribute vec3 a_normal;
+    
+    uniform mat4 u_matrix;
+
+    varying vec3 v_normal;
+
+    void main(){
+
+        vec4 position = a_position;
+
+    v_normal = a_normal;
+
+    gl_Position = u_matrix * position;
+
+    }
+  </script>
+
+  <script id="3d-fragment-shader" type="notjs">
+    // fragment shaders don't have a default precision so we need
+    // to pick one. mediump is a good default
+
+    precision mediump float;
+    uniform vec3 u_light;
+
+    varying vec3 v_normal;
+
+    void main() {
+
+    vec3 color = vec3(0,0,0);
+    vec3 material_color = vec3(1,0,0);
+    vec3 light_color = vec3(.7,.7,.7);
+
+    vec3 normal = normalize(v_normal);
+
+    float diffuse = dot(normal, u_light);
+
+    color = material_color + light_color*diffuse;
+    
+    gl_FragColor = vec4(color,1.0);
+    }
+  </script>
+  <script src="texture.js"></script>
+
+</body>
+  
+</html>
