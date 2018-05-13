@@ -443,9 +443,9 @@ function generateNormals(verticies) {
 
     for(let i=0;i<verticies.length;i+=9) {
 
-	let pointA = [verticies[i*3+0],verticies[i*3+1],verticies[i*3+2]];
-	let pointB = [verticies[i*3+3],verticies[i*3+4],verticies[i*3+5]];
-	let pointC = [verticies[i*3+6],verticies[i*3+7],verticies[i*3+8]];
+	let pointA = [verticies[i+0],verticies[i+1],verticies[i+2]];
+	let pointB = [verticies[i+3],verticies[i+4],verticies[i+5]];
+	let pointC = [verticies[i+6],verticies[i+7],verticies[i+8]];
 
 	//const normal = cross(arraySub(pointB,pointA),arraySub(pointC,pointA));
 	const normal = cross(arraySub(pointC,pointA),arraySub(pointB,pointA));
