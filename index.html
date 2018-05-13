@@ -20,18 +20,17 @@
     // an attribute will receive data from a buffer
     attribute vec4 a_position;
     attribute vec3 a_normal;
-    
-    uniform mat4 u_matrix;
+
+    uniform mat4 u_worldViewProjection;
+    uniform mat4 u_world;
 
     varying vec3 v_normal;
 
     void main(){
 
-        vec4 position = a_position;
+        v_normal = mat3(u_world) * a_normal;
 
-        v_normal = a_normal;
-
-        gl_Position = u_matrix * position;
+        gl_Position = u_worldViewProjection * a_position;
 
     }
   </script>

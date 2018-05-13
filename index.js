@@ -516,6 +516,9 @@ var positionLocation = gl.getAttribLocation(program, "a_position");
 var normalLocation = gl.getAttribLocation(program,"a_normal");
 
 // lookup uniforms
+var worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
+var worldLocation = gl.getUniformLocation(program, "u_world");
+
 var matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
 var lightLocation = gl.getUniformLocation(program, "u_light");
@@ -615,12 +618,16 @@ function drawScene(currentTime) {
     cameraMatrix = m4.lookAt(cameraPosition,target);
     
     var viewMatrix = m4.inverse(cameraMatrix);
+    
     var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
-    var matrix = m4.yRotate(viewProjectionMatrix, rotation[1]);
+    var worldMatrix = m4.yRotation(rotation[1]);
 
-    gl.uniformMatrix4fv(matrixLocation, false, matrix);
-    // set the translation
+    var worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix);
+
+    gl.uniformMatrix4fv(worldViewProjectionLocation, false, worldViewProjectionMatrix);
+    gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
+    
     var primitiveType = gl.TRIANGLES;
     var type = gl.UNSIGNED_SHORT;
     var offset = 0;
