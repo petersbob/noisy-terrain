@@ -546,7 +546,7 @@ var rotationSpeed = 1.5;
 
 var previousTime = 0;
 
-var spin = true;
+var spin = false;
 
 if (spin) {
     requestAnimationFrame(drawScene)
@@ -566,10 +566,11 @@ function drawScene(currentTime) {
 
     resize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0, 0, 0, 0);
+    gl.clearColor(0.4, 0.4, 0.4, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    //gl.enable(gl.CULL_FACE);
+    gl.enable(gl.CULL_FACE); // cull the back face by default
+    
     gl.enable(gl.DEPTH_TEST);
 
     gl.useProgram(program);
@@ -603,7 +604,7 @@ function drawScene(currentTime) {
     var zFar = 2000;
     var projectionMatrix = m4.perspective(fieldOfViewInRadians, aspect, zNear, zFar);
 
-    var light_position = [100, 100, 0];
+    var light_position = [0,100,100];
 
     gl.uniform3fv(lightLocation, m4.normalize(light_position));
 
