@@ -12,11 +12,11 @@ function createShader(gl, type, source) {
 }
 
 function createProgram(gl, vertexShader, fragmentShader) {
-    var program = gl.createProgram();
+    let program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
-    var success = gl.getProgramParameter(program, gl.LINK_STATUS);
+    let success = gl.getProgramParameter(program, gl.LINK_STATUS);
     if(success) {
         return program;
     }
@@ -28,8 +28,8 @@ function createProgram(gl, vertexShader, fragmentShader) {
 
 
 function resize(canvas) {
-    var width  = canvas.clientWidth;
-    var height = canvas.clientHeight;
+    let width  = canvas.clientWidth;
+    let height = canvas.clientHeight;
     if (canvas.width !== width ||  canvas.height !== height) {
       canvas.width  = width;
       canvas.height = height;
@@ -44,10 +44,10 @@ function randomInt(range) {
 }
 // Fills the buffer with the values that define a rectangle.
 function setRectangle(gl, x, y, width, height) {
-    var x1 = x;
-    var x2 = x + width;
-    var y1 = y;
-    var y2 = y + height;
+    let x1 = x;
+    let x2 = x + width;
+    let y1 = y;
+    let y2 = y + height;
 
     // NOTE: gl.bufferData(gl.ARRAY_BUFFER, ...) will affect
     // whatever buffer is bound to the `ARRAY_BUFFER` bind point
@@ -62,60 +62,60 @@ function setRectangle(gl, x, y, width, height) {
 	x2, y2]), gl.STATIC_DRAW);
 }
 
-var m4 = {
+let m4 = {
 
     inverse: function(m) {
-    var m00 = m[0 * 4 + 0];
-    var m01 = m[0 * 4 + 1];
-    var m02 = m[0 * 4 + 2];
-    var m03 = m[0 * 4 + 3];
-    var m10 = m[1 * 4 + 0];
-    var m11 = m[1 * 4 + 1];
-    var m12 = m[1 * 4 + 2];
-    var m13 = m[1 * 4 + 3];
-    var m20 = m[2 * 4 + 0];
-    var m21 = m[2 * 4 + 1];
-    var m22 = m[2 * 4 + 2];
-    var m23 = m[2 * 4 + 3];
-    var m30 = m[3 * 4 + 0];
-    var m31 = m[3 * 4 + 1];
-    var m32 = m[3 * 4 + 2];
-    var m33 = m[3 * 4 + 3];
-    var tmp_0  = m22 * m33;
-    var tmp_1  = m32 * m23;
-    var tmp_2  = m12 * m33;
-    var tmp_3  = m32 * m13;
-    var tmp_4  = m12 * m23;
-    var tmp_5  = m22 * m13;
-    var tmp_6  = m02 * m33;
-    var tmp_7  = m32 * m03;
-    var tmp_8  = m02 * m23;
-    var tmp_9  = m22 * m03;
-    var tmp_10 = m02 * m13;
-    var tmp_11 = m12 * m03;
-    var tmp_12 = m20 * m31;
-    var tmp_13 = m30 * m21;
-    var tmp_14 = m10 * m31;
-    var tmp_15 = m30 * m11;
-    var tmp_16 = m10 * m21;
-    var tmp_17 = m20 * m11;
-    var tmp_18 = m00 * m31;
-    var tmp_19 = m30 * m01;
-    var tmp_20 = m00 * m21;
-    var tmp_21 = m20 * m01;
-    var tmp_22 = m00 * m11;
-    var tmp_23 = m10 * m01;
+    let m00 = m[0 * 4 + 0];
+    let m01 = m[0 * 4 + 1];
+    let m02 = m[0 * 4 + 2];
+    let m03 = m[0 * 4 + 3];
+    let m10 = m[1 * 4 + 0];
+    let m11 = m[1 * 4 + 1];
+    let m12 = m[1 * 4 + 2];
+    let m13 = m[1 * 4 + 3];
+    let m20 = m[2 * 4 + 0];
+    let m21 = m[2 * 4 + 1];
+    let m22 = m[2 * 4 + 2];
+    let m23 = m[2 * 4 + 3];
+    let m30 = m[3 * 4 + 0];
+    let m31 = m[3 * 4 + 1];
+    let m32 = m[3 * 4 + 2];
+    let m33 = m[3 * 4 + 3];
+    let tmp_0  = m22 * m33;
+    let tmp_1  = m32 * m23;
+    let tmp_2  = m12 * m33;
+    let tmp_3  = m32 * m13;
+    let tmp_4  = m12 * m23;
+    let tmp_5  = m22 * m13;
+    let tmp_6  = m02 * m33;
+    let tmp_7  = m32 * m03;
+    let tmp_8  = m02 * m23;
+    let tmp_9  = m22 * m03;
+    let tmp_10 = m02 * m13;
+    let tmp_11 = m12 * m03;
+    let tmp_12 = m20 * m31;
+    let tmp_13 = m30 * m21;
+    let tmp_14 = m10 * m31;
+    let tmp_15 = m30 * m11;
+    let tmp_16 = m10 * m21;
+    let tmp_17 = m20 * m11;
+    let tmp_18 = m00 * m31;
+    let tmp_19 = m30 * m01;
+    let tmp_20 = m00 * m21;
+    let tmp_21 = m20 * m01;
+    let tmp_22 = m00 * m11;
+    let tmp_23 = m10 * m01;
 
-    var t0 = (tmp_0 * m11 + tmp_3 * m21 + tmp_4 * m31) -
+    let t0 = (tmp_0 * m11 + tmp_3 * m21 + tmp_4 * m31) -
         (tmp_1 * m11 + tmp_2 * m21 + tmp_5 * m31);
-    var t1 = (tmp_1 * m01 + tmp_6 * m21 + tmp_9 * m31) -
+    let t1 = (tmp_1 * m01 + tmp_6 * m21 + tmp_9 * m31) -
         (tmp_0 * m01 + tmp_7 * m21 + tmp_8 * m31);
-    var t2 = (tmp_2 * m01 + tmp_7 * m11 + tmp_10 * m31) -
+    let t2 = (tmp_2 * m01 + tmp_7 * m11 + tmp_10 * m31) -
         (tmp_3 * m01 + tmp_6 * m11 + tmp_11 * m31);
-    var t3 = (tmp_5 * m01 + tmp_8 * m11 + tmp_11 * m21) -
+    let t3 = (tmp_5 * m01 + tmp_8 * m11 + tmp_11 * m21) -
         (tmp_4 * m01 + tmp_9 * m11 + tmp_10 * m21);
 
-    var d = 1.0 / (m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3);
+    let d = 1.0 / (m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3);
 
     return [
       d * t0,
@@ -150,8 +150,8 @@ var m4 = {
   },
 
   perspective: function(fieldofViewInRadians,aspect,near,far) {
-    var f = Math.tan(Math.PI * 0.5 - 0.5 * fieldofViewInRadians);
-    var rangeInv = 1.0 / (near - far);
+    let f = Math.tan(Math.PI * 0.5 - 0.5 * fieldofViewInRadians);
+    let rangeInv = 1.0 / (near - far);
 
     return [
       f / aspect, 0, 0, 0,
@@ -199,8 +199,8 @@ var m4 = {
     },
     
     xRotation: function(angleInRadians) {
-    var c = Math.cos(angleInRadians);
-    var s = Math.sin(angleInRadians);
+    let c = Math.cos(angleInRadians);
+    let s = Math.sin(angleInRadians);
  
     return [
       1, 0, 0, 0,
@@ -211,8 +211,8 @@ var m4 = {
   },
  
   yRotation: function(angleInRadians) {
-    var c = Math.cos(angleInRadians);
-    var s = Math.sin(angleInRadians);
+    let c = Math.cos(angleInRadians);
+    let s = Math.sin(angleInRadians);
  
     return [
       c, 0, -s, 0,
@@ -223,8 +223,8 @@ var m4 = {
   },
  
   zRotation: function(angleInRadians) {
-    var c = Math.cos(angleInRadians);
-    var s = Math.sin(angleInRadians);
+    let c = Math.cos(angleInRadians);
+    let s = Math.sin(angleInRadians);
  
     return [
        c, s, 0, 0,
@@ -235,7 +235,7 @@ var m4 = {
   },
 
     normalize: function(v) {
-        var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); 
+        let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); 
         // make sure we don't divide by 0. 
         if (length > 0.00001) { 
             return [v[0] / length, v[1] / length, v[2] / length];
@@ -263,7 +263,7 @@ var m4 = {
       }
 
       function normalize(v) {
-          var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); 
+          let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); 
           // make sure we don't divide by 0. 
           if (length > 0.00001) { 
           return [v[0] / length, v[1] / length, v[2] / length];
@@ -272,50 +272,50 @@ var m4 = {
            } 
           } 
 
-      var z = normalize(subtractVectors(cameraPosition, target)); 
-      var x = cross([0,1,0],z);
-      var y = cross(z,x); 
+      let z = normalize(subtractVectors(cameraPosition, target)); 
+      let x = cross([0,1,0],z);
+      let y = cross(z,x); 
       return [ 
         x[0], x[1], x[2], 0, 
         y[0], y[1], y[2], 0, 
         z[0], z[1], z[2], 0, 
         cameraPosition[0], cameraPosition[1], cameraPosition[2], 1,
-      ] 
+      ];
 
   },
 multiply: function(a, b) {
-    var a00 = a[0 * 4 + 0];
-    var a01 = a[0 * 4 + 1];
-    var a02 = a[0 * 4 + 2];
-    var a03 = a[0 * 4 + 3];
-    var a10 = a[1 * 4 + 0];
-    var a11 = a[1 * 4 + 1];
-    var a12 = a[1 * 4 + 2];
-    var a13 = a[1 * 4 + 3];
-    var a20 = a[2 * 4 + 0];
-    var a21 = a[2 * 4 + 1];
-    var a22 = a[2 * 4 + 2];
-    var a23 = a[2 * 4 + 3];
-    var a30 = a[3 * 4 + 0];
-    var a31 = a[3 * 4 + 1];
-    var a32 = a[3 * 4 + 2];
-    var a33 = a[3 * 4 + 3];
-    var b00 = b[0 * 4 + 0];
-    var b01 = b[0 * 4 + 1];
-    var b02 = b[0 * 4 + 2];
-    var b03 = b[0 * 4 + 3];
-    var b10 = b[1 * 4 + 0];
-    var b11 = b[1 * 4 + 1];
-    var b12 = b[1 * 4 + 2];
-    var b13 = b[1 * 4 + 3];
-    var b20 = b[2 * 4 + 0];
-    var b21 = b[2 * 4 + 1];
-    var b22 = b[2 * 4 + 2];
-    var b23 = b[2 * 4 + 3];
-    var b30 = b[3 * 4 + 0];
-    var b31 = b[3 * 4 + 1];
-    var b32 = b[3 * 4 + 2];
-    var b33 = b[3 * 4 + 3];
+    let a00 = a[0 * 4 + 0];
+    let a01 = a[0 * 4 + 1];
+    let a02 = a[0 * 4 + 2];
+    let a03 = a[0 * 4 + 3];
+    let a10 = a[1 * 4 + 0];
+    let a11 = a[1 * 4 + 1];
+    let a12 = a[1 * 4 + 2];
+    let a13 = a[1 * 4 + 3];
+    let a20 = a[2 * 4 + 0];
+    let a21 = a[2 * 4 + 1];
+    let a22 = a[2 * 4 + 2];
+    let a23 = a[2 * 4 + 3];
+    let a30 = a[3 * 4 + 0];
+    let a31 = a[3 * 4 + 1];
+    let a32 = a[3 * 4 + 2];
+    let a33 = a[3 * 4 + 3];
+    let b00 = b[0 * 4 + 0];
+    let b01 = b[0 * 4 + 1];
+    let b02 = b[0 * 4 + 2];
+    let b03 = b[0 * 4 + 3];
+    let b10 = b[1 * 4 + 0];
+    let b11 = b[1 * 4 + 1];
+    let b12 = b[1 * 4 + 2];
+    let b13 = b[1 * 4 + 3];
+    let b20 = b[2 * 4 + 0];
+    let b21 = b[2 * 4 + 1];
+    let b22 = b[2 * 4 + 2];
+    let b23 = b[2 * 4 + 3];
+    let b30 = b[3 * 4 + 0];
+    let b31 = b[3 * 4 + 1];
+    let b32 = b[3 * 4 + 2];
+    let b33 = b[3 * 4 + 3];
     return [
       b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30,
       b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31,
@@ -338,22 +338,22 @@ multiply: function(a, b) {
 
 
   vectorMultiply: function(v,m) {
-    var m00 = m[0 * 4 + 0];
-    var m01 = m[0 * 4 + 1];
-    var m02 = m[0 * 4 + 2];
-    var m03 = m[0 * 4 + 3];
-    var m10 = m[1 * 4 + 0];
-    var m11 = m[1 * 4 + 1];
-    var m12 = m[1 * 4 + 2];
-    var m13 = m[1 * 4 + 3];
-    var m20 = m[2 * 4 + 0];
-    var m21 = m[2 * 4 + 1];
-    var m22 = m[2 * 4 + 2];
-    var m23 = m[2 * 4 + 3];
-    var m30 = m[3 * 4 + 0];
-    var m31 = m[3 * 4 + 1];
-    var m32 = m[3 * 4 + 2];
-    var m33 = m[3 * 4 + 3];
+    let m00 = m[0 * 4 + 0];
+    let m01 = m[0 * 4 + 1];
+    let m02 = m[0 * 4 + 2];
+    let m03 = m[0 * 4 + 3];
+    let m10 = m[1 * 4 + 0];
+    let m11 = m[1 * 4 + 1];
+    let m12 = m[1 * 4 + 2];
+    let m13 = m[1 * 4 + 3];
+    let m20 = m[2 * 4 + 0];
+    let m21 = m[2 * 4 + 1];
+    let m22 = m[2 * 4 + 2];
+    let m23 = m[2 * 4 + 3];
+    let m30 = m[3 * 4 + 0];
+    let m31 = m[3 * 4 + 1];
+    let m32 = m[3 * 4 + 2];
+    let m33 = m[3 * 4 + 3];
 
     return [
       m00*v[0] + m01*v[1] + m02*v[2] + m03*v[3],
@@ -396,10 +396,10 @@ function random(a,b) {
 
     function fract(val) {
 
-	var stringVal = val.toString();
+	let stringVal = val.toString();
 
 	if (stringVal.indexOf(".") > -1) {
-	    var parts = stringVal.split(".");
+	    let parts = stringVal.split(".");
 	    return parseFloat("0." + parts[1]);
 	} else {
 	    return 0;
@@ -451,8 +451,8 @@ function generateVerticies() {
     let grid_width = 200;
     let nRV = []; // nonRepeated Verticies
 
-    for (var i=0;i<grid_width;i++) {
-	for(var j=0;j<grid_width;j++) {
+    for (let i=0;i<grid_width;i++) {
+	for(let j=0;j<grid_width;j++) {
 	    const x = i*5;
 	    const z = j*5;
 	    const y = noise(x,z) * 300;
@@ -465,8 +465,8 @@ function generateVerticies() {
 
     let verticies = [];
 
-    for(var i=0;i<width-1;i++) {
-	for(var j=0;j<width-1;j++) {
+    for(let i=0;i<width-1;i++) {
+	for(let j=0;j<width-1;j++) {
 	    verticies.push(
 		// first triangle
 		nRV[(j+width*i)*3],nRV[(j+width*i)*3+1],nRV[(j+width*i)*3+2],
@@ -496,7 +496,7 @@ function generateNormals(verticies) {
     }
 
     function cross(vector1, vector2) {
-	var result = new Array(3);
+	let result = new Array(3);
 	result[0] = vector1[1]*vector2[2] - vector1[2]*vector2[1];
 	result[1] = vector1[2]*vector2[0] - vector1[0]*vector2[2];
 	result[2] = vector1[0]*vector2[1] - vector1[1]*vector2[0];
@@ -522,7 +522,7 @@ function generateNormals(verticies) {
 }
 
 // create data.gui
-class params  {
+class parameters  {
     constructor() {
 	this.x = -150;
 	this.y = 0;
@@ -536,8 +536,8 @@ class params  {
     }
 };
 
-params = new params();
-var gui = new dat.GUI();
+let params = new parameters();
+let gui = new dat.GUI();
 gui.add(params,'x',-200,200).onChange(setValue);
 gui.add(params,'y',-200,200).onChange(setValue);
 gui.add(params,'z',-400,0).onChange(setValue);
@@ -549,72 +549,70 @@ gui.add(params,'scaleY',-3,3).onChange(setValue);
 gui.add(params,'scaleZ',-3,3).onChange(setValue);
 ///////////////////////////////////////////////////////
 
-var canvas = document.getElementById("c");
+let canvas = document.getElementById("c");
 
-var gl = canvas.getContext("webgl");
+let gl = canvas.getContext("webgl");
 if (!gl) {
     console.log("WebGL not working");
 }
 
-var vertexShaderSource = document.getElementById("3d-vertex-shader").text;
-var fragmentShaderSource = document.getElementById("3d-fragment-shader").text;
+let vertexShaderSource = document.getElementById("3d-vertex-shader").text;
+let fragmentShaderSource = document.getElementById("3d-fragment-shader").text;
 
-var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+let vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+let fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
-var program = createProgram(gl, vertexShader, fragmentShader);
+let program = createProgram(gl, vertexShader, fragmentShader);
 
 // look up where the vertex data needs to go.
-var positionLocation = gl.getAttribLocation(program, "a_position");
-var normalLocation = gl.getAttribLocation(program,"a_normal");
+let positionLocation = gl.getAttribLocation(program, "a_position");
+let normalLocation = gl.getAttribLocation(program,"a_normal");
 
 // lookup uniforms
-var worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
-var worldLocation = gl.getUniformLocation(program, "u_world");
+let worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
+let worldLocation = gl.getUniformLocation(program, "u_world");
 
-var matrixLocation = gl.getUniformLocation(program, "u_matrix");
+let matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
-var lightLocation = gl.getUniformLocation(program, "u_light");
+let lightLocation = gl.getUniformLocation(program, "u_light");
 
-let grid_width = 20;
-
-var verticies = generateVerticies();
-var normals = generateNormals(verticies);
+let verticies = generateVerticies();
+let normals = generateNormals(verticies);
 
 // Create a buffer to put positions in
-var positionBuffer = gl.createBuffer();
+let positionBuffer = gl.createBuffer();
 // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 // Put geometry data into buffer
 setGeometry(gl);
 
-var normalBuffer = gl.createBuffer();
+let normalBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 // Put the normal data into the buffer
 setNormals(gl);
 
-var translation = [-150,0,-360];
-var scale = [1,1,1];
-var rotation = [degToRad(190),degToRad(40),degToRad(320)];
-var fieldOfViewInRadians = degToRad(60);
+let translation = [-150,0,-360];
+let scale = [1,1,1];
+let rotation = [degToRad(190),degToRad(40),degToRad(320)];
+let fieldOfViewInRadians = degToRad(60);
 
-var rotationSpeed = 1.5;
+let rotationSpeed = 1.5;
 
-var previousTime = 0;
+let previousTime = 0;
 
-var spin = false;
+let spin = false;
 
 if (spin) {
     requestAnimationFrame(drawScene)
 } else {
-    drawScene()
+    drawScene();
 }
 
 function drawScene(currentTime) {
 
     if (spin) {
 	currentTime *=.001;
-	var deltaTime = currentTime - previousTime;
+	let deltaTime = currentTime - previousTime;
 
 	rotation[1] += rotationSpeed * deltaTime;
 	previousTime = currentTime;
@@ -636,11 +634,11 @@ function drawScene(currentTime) {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-    var size = 3;
-    var type = gl.FLOAT;
-    var normalize = false;
-    var stride = 0;
-    var offset = 0;
+    let size = 3;
+    let type = gl.FLOAT;
+    let normalize = false;
+    let stride = 0;
+    let offset = 0;
     gl.vertexAttribPointer(
      positionLocation, size, type, normalize, stride, offset)
      
@@ -648,43 +646,42 @@ function drawScene(currentTime) {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 
-     var size = 3;
-     var type = gl.FLOAT;
-     var normalize = false;
-     var stride = 0;
-     var offset = 0;
+     type = gl.FLOAT;
+     normalize = false;
+     stride = 0;
+     offset = 0;
      gl.vertexAttribPointer(normalLocation, size, type, normalize, stride, offset);
 
-    var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    var zNear = 1;
-    var zFar = 2000;
-    var projectionMatrix = m4.perspective(fieldOfViewInRadians, aspect, zNear, zFar);
+    let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    let zNear = 1;
+    let zFar = 2000;
+    let projectionMatrix = m4.perspective(fieldOfViewInRadians, aspect, zNear, zFar);
 
-    var light_position = [0,100,100];
+    let light_position = [0,100,100];
 
     gl.uniform3fv(lightLocation, m4.normalize(light_position));
 
-    var target = [0,0,500];
+    let target = [0,0,500];
 
-    var cameraPosition = [800,1000,800];
+    let cameraPosition = [800,1000,800];
 
-    cameraMatrix = m4.lookAt(cameraPosition,target);
+    let cameraMatrix = m4.lookAt(cameraPosition,target);
     
-    var viewMatrix = m4.inverse(cameraMatrix);
+    let viewMatrix = m4.inverse(cameraMatrix);
     
-    var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+    let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
-    var worldMatrix = m4.yRotation(rotation[1]);
+    let worldMatrix = m4.yRotation(rotation[1]);
 
-    var worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix);
+    let worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix);
 
     gl.uniformMatrix4fv(worldViewProjectionLocation, false, worldViewProjectionMatrix);
     gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
     
-    var primitiveType = gl.TRIANGLES;
-    var type = gl.UNSIGNED_SHORT;
-    var offset = 0;
-    var count = verticies.length/3;
+    let primitiveType = gl.TRIANGLES;
+    type = gl.UNSIGNED_SHORT;
+    offset = 0;
+    let count = verticies.length/3;
     gl.drawArrays(primitiveType,0,count);
 
     if (spin) {
@@ -695,7 +692,7 @@ function drawScene(currentTime) {
 // Fill the buffer with the values that define a letter 'F'.
 function setGeometry(gl) {
     
-  var typedData = new Float32Array(verticies);	    
+  let typedData = new Float32Array(verticies);	    
 
   gl.bufferData(
       gl.ARRAY_BUFFER,
@@ -706,7 +703,7 @@ function setGeometry(gl) {
 
 function setNormals(gl) {
 
-    var typedData = new Float32Array(normals);
+    let typedData = new Float32Array(normals);
 
     gl.bufferData(
 	gl.ARRAY_BUFFER,
@@ -723,9 +720,9 @@ function setValue() {
     translation[1] = params.y;
     translation[2] = params.z;
     
-    rotation[0] = degToRad(params.angleX)
-    rotation[1] = degToRad(params.angleY)
-    rotation[2] = degToRad(params.angleZ)
+    rotation[0] = degToRad(params.angleX);
+    rotation[1] = degToRad(params.angleY);
+    rotation[2] = degToRad(params.angleZ);
     
     scale[0] = params.scaleX;
     scale[1] = params.scaleY;
