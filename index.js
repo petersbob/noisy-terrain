@@ -233,6 +233,16 @@ var m4 = {
        0, 0, 0, 1,
     ];
   },
+
+    normalize: function(v) {
+        var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); 
+        // make sure we don't divide by 0. 
+        if (length > 0.00001) { 
+            return [v[0] / length, v[1] / length, v[2] / length];
+        } else { 
+            return [0, 0, 0];
+        } 
+    },
     
     scaling: function(sx, sy, sz) {
 	return [
@@ -391,9 +401,9 @@ function generateVerticies() {
 	for(var j=0;j<grid_width;j++) {
 	    const x = i*50;
 	    const z = j*50;
-	    const y = Math.random() * 200
+	    const y = Math.random() * 200;
 	    
-	    nRV.push(x,y,z)
+	    nRV.push(x,y,z);
 	}
     }
 
@@ -527,8 +537,6 @@ gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 // Put the normal data into the buffer
 setNormals(gl);
 
-var light_position = [100, 100, 0];
-
 var translation = [-150,0,-360];
 var scale = [1,1,1];
 var rotation = [degToRad(190),degToRad(40),degToRad(320)];
@@ -595,7 +603,9 @@ function drawScene(currentTime) {
     var zFar = 2000;
     var projectionMatrix = m4.perspective(fieldOfViewInRadians, aspect, zNear, zFar);
 
-    gl.uniform3fv(lightLocation, light_position);
+    var light_position = [100, 100, 0];
+
+    gl.uniform3fv(lightLocation, m4.normalize(light_position));
 
     var target = [0,0,0];
 
