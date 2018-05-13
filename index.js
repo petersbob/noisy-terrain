@@ -392,16 +392,32 @@ function degToRad(d) {
     return d * Math.PI / 180;
 }
 
+function cellularNoise(x,z) {
+
+    var points = [[0,0],[300,500],[200,700],[450,450],[100,1000],[800,400]];
+
+    var dist = 10000.0;
+
+    for(let i=0;i<points.length;i++) {
+
+	let newdist = Math.sqrt(Math.pow(x - points[i][0],2) + Math.pow(z - points[i][1],2));
+
+	dist = Math.min(dist,newdist);
+    }
+    
+    return dist;
+}
+
 function generateVerticies() {
 
-    let grid_width = 20;
+    let grid_width = 400;
     let nRV = []; // nonRepeated Verticies
 
     for (var i=0;i<grid_width;i++) {
 	for(var j=0;j<grid_width;j++) {
-	    const x = i*50;
-	    const z = j*50;
-	    const y = Math.random() * 200;
+	    const x = i*5;
+	    const z = j*5;
+	    const y = cellularNoise(x,z) * .3;
 	    
 	    nRV.push(x,y,z);
 	}
