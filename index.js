@@ -392,32 +392,70 @@ function degToRad(d) {
     return d * Math.PI / 180;
 }
 
-function cellularNoise(x,z) {
+function random(a,b) {
 
-    var points = [[0,0],[300,500],[200,700],[450,450],[100,1000],[800,400]];
+    function fract(val) {
 
-    var dist = 10000.0;
+	var stringVal = val.toString();
 
-    for(let i=0;i<points.length;i++) {
-
-	let newdist = Math.sqrt(Math.pow(x - points[i][0],2) + Math.pow(z - points[i][1],2));
-
-	dist = Math.min(dist,newdist);
+	if (stringVal.indexOf(".") > -1) {
+	    var parts = stringVal.split(".");
+	    return parseFloat("0." + parts[1]);
+	} else {
+	    return 0;
+	}
     }
-    
-    return dist;
+
+    return fract(
+	Math.sin(
+	    a * 12.9898 + b * 78.233
+	)
+	    * 43758.5453123
+    );
+
+}
+
+function noise(x,z) {
+
+    function mix(a,b,percent) {
+	return a*(1-percent) + b*percent;
+    }
+
+    let newX = x/1000;
+    let newZ = z/1000;
+
+    newX*=10;
+    newZ*=10;
+
+    let fX = newX%1.0;
+    let fZ = newZ%1.0;
+
+    let iX = Math.trunc(newX);
+    let iZ = Math.trunc(newZ);
+
+    let a = random(iX,iZ);
+    let b = random(iX+1.0,iZ);
+    let c = random(iX,iZ+1.0);
+    let d = random(iX+1.0,iZ+1.0);
+
+    let uX = fX*fX*(3.0-2.0*fX);
+    let uZ = fZ*fZ*(3.0-2.0*fZ);    
+
+    return mix(a, b, uX) +
+        (c - a)* uZ * (1.0 - uX) +
+        (d - b) * uX * uZ;
 }
 
 function generateVerticies() {
 
-    let grid_width = 400;
+    let grid_width = 200;
     let nRV = []; // nonRepeated Verticies
 
     for (var i=0;i<grid_width;i++) {
 	for(var j=0;j<grid_width;j++) {
 	    const x = i*5;
 	    const z = j*5;
-	    const y = cellularNoise(x,z) * .3;
+	    const y = noise(x,z) * 300;
 	    
 	    nRV.push(x,y,z);
 	}
@@ -462,7 +500,7 @@ function generateNormals(verticies) {
 	result[0] = vector1[1]*vector2[2] - vector1[2]*vector2[1];
 	result[1] = vector1[2]*vector2[0] - vector1[0]*vector2[2];
 	result[2] = vector1[0]*vector2[1] - vector1[1]*vector2[0];
-	return result
+	return result;
     }
 
     let normals = [];
@@ -473,7 +511,6 @@ function generateNormals(verticies) {
 	let pointB = [verticies[i+3],verticies[i+4],verticies[i+5]];
 	let pointC = [verticies[i+6],verticies[i+7],verticies[i+8]];
 
-	//const normal = cross(arraySub(pointB,pointA),arraySub(pointC,pointA));
 	const normal = cross(arraySub(pointC,pointA),arraySub(pointB,pointA));
 	
 	normals.push(normal[0],normal[1],normal[2]);
@@ -627,9 +664,9 @@ function drawScene(currentTime) {
 
     gl.uniform3fv(lightLocation, m4.normalize(light_position));
 
-    var target = [0,0,0];
+    var target = [0,0,500];
 
-    var cameraPosition = [800,400,400]
+    var cameraPosition = [800,1000,800];
 
     cameraMatrix = m4.lookAt(cameraPosition,target);
     
