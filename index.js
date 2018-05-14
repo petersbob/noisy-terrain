@@ -1,77 +1,3 @@
-function generateVerticies() {
-
-    let grid_width = 50;
-    let nRV = []; // nonRepeated Verticies
-
-    for (let i=0;i<grid_width;i++) {
-	for(let j=0;j<grid_width;j++) {
-	    const x = i*40;
-	    const z = j*40;
-	    const y = noise(x,z) * 300;
-	    
-	    nRV.push(x,y,z);
-	}
-    }
-
-    let width = grid_width;
-
-    let verticies = [];
-
-    for(let i=0;i<width-1;i++) {
-	for(let j=0;j<width-1;j++) {
-	    verticies.push(
-		// first triangle
-		nRV[(j+width*i)*3],nRV[(j+width*i)*3+1],nRV[(j+width*i)*3+2],
-
-		nRV[(j+1+width*i)*3],nRV[(j+1+width*i)*3+1],nRV[(j+1+width*i)*3+2],
-
-		nRV[(j+width+width*i)*3],nRV[(j+width+width*i)*3+1],nRV[(j+width+width*i)*3+2],
-
-		nRV[(j+1+width*i)*3],nRV[(j+1+width*i)*3+1],nRV[(j+1+width*i)*3+2],
-		
-		nRV[(j+width+1+width*i)*3],nRV[(j+width+1+width*i)*3+1],nRV[(j+width+1+width*i)*3+2],
-
-		nRV[(j+width+width*i)*3],nRV[(j+width+width*i)*3+1],nRV[(j+width+width*i)*3+2]
-	    )
-	}
-    }
-
-    return verticies;
-
-}
-
-function generateNormals(verticies) {
-
-    function arraySub(a,b) {
-	// array a - array b
-	return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];
-    }
-
-    function cross(vector1, vector2) {
-	let result = new Array(3);
-	result[0] = vector1[1]*vector2[2] - vector1[2]*vector2[1];
-	result[1] = vector1[2]*vector2[0] - vector1[0]*vector2[2];
-	result[2] = vector1[0]*vector2[1] - vector1[1]*vector2[0];
-	return result;
-    }
-
-    let normals = [];
-
-    for(let i=0;i<verticies.length;i+=9) {
-
-	let pointA = [verticies[i+0],verticies[i+1],verticies[i+2]];
-	let pointB = [verticies[i+3],verticies[i+4],verticies[i+5]];
-	let pointC = [verticies[i+6],verticies[i+7],verticies[i+8]];
-
-	const normal = cross(arraySub(pointC,pointA),arraySub(pointB,pointA));
-	
-	normals.push(normal[0],normal[1],normal[2]);
-	normals.push(normal[0],normal[1],normal[2]);
-	normals.push(normal[0],normal[1],normal[2]);
-    }
-
-    return normals;
-}
 
 // create data.gui
 class parameters  {
@@ -90,15 +16,15 @@ class parameters  {
 
 let params = new parameters();
 let gui = new dat.GUI();
-gui.add(params,'x',-200,200).onChange(setValue);
-gui.add(params,'y',-200,200).onChange(setValue);
-gui.add(params,'z',-400,0).onChange(setValue);
-gui.add(params,'angleX',-360,360).onChange(setValue);
-gui.add(params,'angleY',-360,360).onChange(setValue);
-gui.add(params,'angleZ',-360,360).onChange(setValue);
-gui.add(params,'scaleX',-3,3).onChange(setValue);
-gui.add(params,'scaleY',-3,3).onChange(setValue);
-gui.add(params,'scaleZ',-3,3).onChange(setValue);
+gui.add(params,"x",-200,200).onChange(setValue);
+gui.add(params,"y",-200,200).onChange(setValue);
+gui.add(params,"z",-400,0).onChange(setValue);
+gui.add(params,"angleX",-360,360).onChange(setValue);
+gui.add(params,"angleY",-360,360).onChange(setValue);
+gui.add(params,"angleZ",-360,360).onChange(setValue);
+gui.add(params,"scaleX",-3,3).onChange(setValue);
+gui.add(params,"scaleY",-3,3).onChange(setValue);
+gui.add(params,"scaleZ",-3,3).onChange(setValue);
 ///////////////////////////////////////////////////////
 
 let canvas = document.getElementById("c");
@@ -107,6 +33,11 @@ let gl = canvas.getContext("webgl");
 if (!gl) {
     console.log("WebGL not working");
 }
+
+let width = 10;
+let step = 2;
+
+var data = new Data(width,step);
 
 let vertexShaderSource = document.getElementById("3d-vertex-shader").text;
 let fragmentShaderSource = document.getElementById("3d-fragment-shader").text;
@@ -128,8 +59,8 @@ let matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
 let lightLocation = gl.getUniformLocation(program, "u_light");
 
-let verticies = generateVerticies();
-let normals = generateNormals(verticies);
+let verticies = data.FlatVerticies;
+let normals = data.FlatNormals;
 
 // Create a buffer to put positions in
 let positionBuffer = gl.createBuffer();
