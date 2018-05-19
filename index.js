@@ -2,12 +2,12 @@
 // create data.gui
 class parameters  {
     constructor() {
-	this.x = -150;
+	this.x = 0;
 	this.y = 0;
-	this.z = -360;
-	this.angleX = 190;
-	this.angleY = 40;
-	this.angleZ = 320;
+	this.z = 0;
+	this.angleX = 0;
+	this.angleY = 0;
+	this.angleZ = 0;
 	this.scaleX = 1;
 	this.scaleY = 1;
 	this.scaleZ = 1;
@@ -16,9 +16,9 @@ class parameters  {
 
 let params = new parameters();
 let gui = new dat.GUI();
-gui.add(params,"x",-200,200).onChange(setValue);
-gui.add(params,"y",-200,200).onChange(setValue);
-gui.add(params,"z",-400,0).onChange(setValue);
+gui.add(params,"x",-2000,2000).onChange(setValue);
+gui.add(params,"y",-2000,2000).onChange(setValue);
+gui.add(params,"z",-2000,2000).onChange(setValue);
 gui.add(params,"angleX",-360,360).onChange(setValue);
 gui.add(params,"angleY",-360,360).onChange(setValue);
 gui.add(params,"angleZ",-360,360).onChange(setValue);
@@ -59,8 +59,7 @@ let matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
 let lightLocation = gl.getUniformLocation(program, "u_light");
 
-let cameraPosition = [800,1000,800];
-
+let cameraPosition = [0,400,600];
 let verticies = data.FlatVerticies;
 let normals = data.FlatNormals;
 
@@ -76,9 +75,9 @@ gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 // Put the normal data into the buffer
 setNormals(gl);
 
-let translation = [-150,0,-360];
+let translation = [0,0,0];
 let scale = [1,1,1];
-let rotation = [degToRad(190),degToRad(40),degToRad(320)];
+let rotation = [degToRad(0),degToRad(0),degToRad(0)];
 let fieldOfViewInRadians = degToRad(60);
 
 let rotationSpeed = 1.5;
@@ -154,7 +153,13 @@ function drawScene(currentTime) {
     
     let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
-    let worldMatrix = m4.yRotation(rotation[1]);
+    let worldMatrix = m4.multiply(
+	m4.xRotation(rotation[0]),
+	m4.yRotation(rotation[1])
+    );
+    worldMatrix = m4.zRotate(worldMatrix,rotation[2]);
+    worldMatrix = m4.scale(worldMatrix,scale[0],scale[1],scale[2]);
+    worldMatrix = m4.translate(worldMatrix,translation[0],translation[1],translation[2]);
 
     let worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix);
 
@@ -220,7 +225,7 @@ document.addEventListener('keydown', function(event) {
         return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
     }
 
-    event.preventDefault();
+    //event.preventDefault();
 
     let toCenter = [0,0,0];
 
