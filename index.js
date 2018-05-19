@@ -34,8 +34,8 @@ if (!gl) {
     console.log("WebGL not working");
 }
 
-let width = 10;
-let step = 2;
+let width = 40; // number of points in the grid with
+let step = 50; // distance between the grid points
 
 var data = new Data(width,step);
 
@@ -58,6 +58,8 @@ let worldLocation = gl.getUniformLocation(program, "u_world");
 let matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
 let lightLocation = gl.getUniformLocation(program, "u_light");
+
+let cameraPosition = [800,1000,800];
 
 let verticies = data.FlatVerticies;
 let normals = data.FlatNormals;
@@ -144,9 +146,7 @@ function drawScene(currentTime) {
 
     gl.uniform3fv(lightLocation, m4.normalize(light_position));
 
-    let target = [0,0,500];
-
-    let cameraPosition = [800,1000,800];
+    let target = [0,0,0];
 
     let cameraMatrix = m4.lookAt(cameraPosition,target);
     
@@ -213,3 +213,86 @@ function setValue() {
     
     drawScene();
 }
+
+document.addEventListener('keydown', function(event) {
+
+    function cross(a, b) {
+        return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+    }
+
+    event.preventDefault();
+
+    let toCenter = [0,0,0];
+
+    let perp, dist, tempPosition, normalized = [0,0,0];
+    
+    switch (event.key) {
+    case "ArrowDown":
+
+	perp = m4.normalize(cross(cameraPosition,[1,cameraPosition[1],cameraPosition[2]]))
+
+	dist = Math.sqrt(Math.pow(cameraPosition[0],2) + Math.pow(cameraPosition[1],2) + Math.pow(cameraPosition[2],2));
+
+	tempPosition = [cameraPosition[0]+= perp[0]*40,
+			cameraPosition[1]+= perp[1]*40,
+			cameraPosition[2]+= perp[2]*40,
+		       ];
+
+	normalized = m4.normalize(tempPosition);
+
+	cameraPosition = [normalized[0]*dist,normalized[1]*dist,normalized[2]*dist];
+	break;
+	
+    case "ArrowUp":
+	perp = m4.normalize(cross(cameraPosition,[1,cameraPosition[1],cameraPosition[2]]))
+
+	dist = Math.sqrt(Math.pow(cameraPosition[0],2) + Math.pow(cameraPosition[1],2) + Math.pow(cameraPosition[2],2));
+
+	tempPosition = [cameraPosition[0]-= perp[0]*40,
+			cameraPosition[1]-= perp[1]*40,
+			cameraPosition[2]-= perp[2]*40,
+		       ];
+
+	normalized = m4.normalize(tempPosition);
+
+	cameraPosition = [normalized[0]*dist,normalized[1]*dist,normalized[2]*dist];
+	break;
+
+    case "ArrowLeft":
+
+	perp = m4.normalize(cross(cameraPosition,[cameraPosition[0],1,cameraPosition[2]]))
+
+	dist = Math.sqrt(Math.pow(cameraPosition[0],2) + Math.pow(cameraPosition[1],2) + Math.pow(cameraPosition[2],2));
+
+	tempPosition = [cameraPosition[0]+= perp[0]*40,
+			    cameraPosition[1]+= perp[1]*40,
+			    cameraPosition[2]+= perp[2]*40,
+			    ];
+
+	normalized = m4.normalize(tempPosition);
+
+	cameraPosition = [normalized[0]*dist,normalized[1]*dist,normalized[2]*dist];
+	break;
+
+    case "ArrowRight":
+	perp = m4.normalize(cross(cameraPosition,[cameraPosition[0],1,cameraPosition[2]]))
+
+	dist = Math.sqrt(Math.pow(cameraPosition[0],2) + Math.pow(cameraPosition[1],2) + Math.pow(cameraPosition[2],2));
+
+	tempPosition = [cameraPosition[0]-= perp[0]*40,
+			    cameraPosition[1]-= perp[1]*40,
+			    cameraPosition[2]-= perp[2]*40,
+			    ];
+
+	normalized = m4.normalize(tempPosition);
+
+	cameraPosition = [normalized[0]*dist,normalized[1]*dist,normalized[2]*dist];
+
+	break;
+	
+	
+    }
+
+    drawScene();
+
+});
