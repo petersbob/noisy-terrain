@@ -48,7 +48,7 @@ if (!gl) {
 let size = 6000; // number of points in the grid with
 let resolution = 40; // distance between the grid points
 
-let data = new Data(size, resolution);
+let terrain = new Terrain(size, resolution);
 
 let vertexShaderSource = document.getElementById("3d-vertex-shader").text;
 let fragmentShaderSource = document.getElementById("3d-fragment-shader").text;
@@ -87,8 +87,8 @@ drawScene();
 
 function generateGeomtry() {
 
-    verticies = data.FlatVerticies;
-    normals = data.FlatNormals;
+    verticies = terrain.FlatVerticies;
+    normals = terrain.FlatNormals;
 
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -213,7 +213,7 @@ function setValue() {
     scale[1] = params.scaleY;
     scale[2] = params.scaleZ;
 
-    data.NewWidthAndStep(params.size,params.resolution);
+    terrain.NewSizeAndResolution(params.size,params.resolution);
 
     generateGeomtry();
     drawScene();
