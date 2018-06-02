@@ -13,6 +13,8 @@ class parameters {
 
         this.size = 6000;
         this.resolution = 40;
+        this.maxHeight = 400;
+        this.scaleFactor = 20;
     }
 }
 
@@ -34,8 +36,11 @@ guiTransforms.add(params, "scaleZ", -3, 3).onChange(setValue);
 
 var guiParameters = gui.addFolder("Parameters");
 
-guiParameters.add(params, "size", 0,2000).onChange(setValue).step(1);
+guiParameters.add(params, "size", 0,8000).onChange(setValue).step(1);
 guiParameters.add(params, "resolution", 0,100).onChange(setValue).step(1);
+guiParameters.add(params, "maxHeight", -900,900).onChange(setValue).step(1);
+guiParameters.add(params, "scaleFactor", 1,100).onChange(setValue).step(1);
+guiParameters.open();
 ///////////////////////////////////////////////////////
 
 let canvas = document.getElementById("c");
@@ -45,10 +50,12 @@ if (!gl) {
     console.log("WebGL not working");
 }
 
-let size = 6000; // number of points in the grid with
-let resolution = 40; // distance between the grid points
-
-let terrain = new Terrain(size, resolution);
+let terrain = new Terrain(
+    params.size,
+    params.resolution,
+    params.maxHeight,
+    params.scaleFactor
+);
 
 let vertexShaderSource = document.getElementById("3d-vertex-shader").text;
 let fragmentShaderSource = document.getElementById("3d-fragment-shader").text;
@@ -213,7 +220,14 @@ function setValue() {
     scale[1] = params.scaleY;
     scale[2] = params.scaleZ;
 
-    terrain.NewSizeAndResolution(params.size,params.resolution);
+    terrain.size = params.size;
+    terrain.resolution = params.resolution;
+    terrain.maxHeight = params.maxHeight;
+    terrain.scaleFactor = params.scaleFactor;
+
+    terrain.gridSize = terrain.size/terrain.resolution;
+
+    terrain.GenerateTerrain();
 
     generateGeomtry();
     drawScene();
