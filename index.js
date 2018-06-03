@@ -11,8 +11,7 @@ class parameters {
         this.scaleY = 1;
         this.scaleZ = 1;
 
-        this.size = 6000;
-        this.resolution = 40;
+        this.resolution = 75;
         this.maxHeight = 400;
         this.scaleFactor = 20;
     }
@@ -36,7 +35,6 @@ guiTransforms.add(params, "scaleZ", -3, 3).onChange(setValue);
 
 var guiParameters = gui.addFolder("Parameters");
 
-guiParameters.add(params, "size", 0,8000).onChange(setValue).step(1);
 guiParameters.add(params, "resolution", 0,100).onChange(setValue).step(1);
 guiParameters.add(params, "maxHeight", -900,900).onChange(setValue).step(1);
 guiParameters.add(params, "scaleFactor", 1,100).onChange(setValue).step(1);
@@ -51,7 +49,7 @@ if (!gl) {
 }
 
 let terrain = new Terrain(
-    params.size,
+    24000,
     params.resolution,
     params.maxHeight,
     params.scaleFactor
@@ -77,7 +75,7 @@ let matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
 let lightLocation = gl.getUniformLocation(program, "u_light");
 
-let cameraPosition = [0, 1000, 4000];
+let cameraPosition = [0, 5000, 8000];
 let verticies = [];
 let normals = [];
 
@@ -145,10 +143,10 @@ function drawScene() {
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     let zNear = 1;
-    let zFar = 10000;
+    let zFar = 20000;
     let projectionMatrix = m4.perspective(fieldOfViewInRadians, aspect, zNear, zFar);
 
-    let light_position = [0, 100, 100];
+    let light_position = [0, 100, 0];
 
     gl.uniform3fv(lightLocation, m4.normalize(light_position));
 
@@ -220,16 +218,21 @@ function setValue() {
     scale[1] = params.scaleY;
     scale[2] = params.scaleZ;
 
-    terrain.size = params.size;
-    terrain.resolution = params.resolution;
-    terrain.maxHeight = params.maxHeight;
-    terrain.scaleFactor = params.scaleFactor;
+    if (terrain.resolution != params.resolution
+        || terrain.maxHeight != params.maxHeight
+        || terrain.scaleFactor != params.scaleFactor) {
 
-    terrain.gridSize = terrain.size/terrain.resolution;
+        terrain.resolution = params.resolution;
+        terrain.maxHeight = params.maxHeight;
+        terrain.scaleFactor = params.scaleFactor;
 
-    terrain.GenerateTerrain();
+        terrain.gridSize = terrain.size/terrain.resolution;
 
-    generateGeomtry();
+        terrain.GenerateTerrain();
+
+        generateGeomtry();
+    }
+
     drawScene();
 }
 
