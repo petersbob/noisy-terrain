@@ -12,7 +12,6 @@ class parameters {
         this.scaleZ = 1;
 
         this.resolution = 75;
-        this.maxHeight = 400;
         this.scaleFactor = 20;
     }
 }
@@ -36,7 +35,6 @@ guiTransforms.add(params, "scaleZ", -3, 3).onChange(setValue);
 var guiParameters = gui.addFolder("Parameters");
 
 guiParameters.add(params, "resolution", 0,100).onChange(setValue).step(1);
-guiParameters.add(params, "maxHeight", -900,900).onChange(setValue).step(1);
 guiParameters.add(params, "scaleFactor", 1,100).onChange(setValue).step(1);
 guiParameters.open();
 ///////////////////////////////////////////////////////
@@ -51,7 +49,6 @@ if (!gl) {
 let terrain = new Terrain(
     24000,
     params.resolution,
-    params.maxHeight,
     params.scaleFactor
 );
 
@@ -219,11 +216,9 @@ function setValue() {
     scale[2] = params.scaleZ;
 
     if (terrain.resolution != params.resolution
-        || terrain.maxHeight != params.maxHeight
         || terrain.scaleFactor != params.scaleFactor) {
 
         terrain.resolution = params.resolution;
-        terrain.maxHeight = params.maxHeight;
         terrain.scaleFactor = params.scaleFactor;
 
         terrain.gridSize = terrain.size/terrain.resolution;
