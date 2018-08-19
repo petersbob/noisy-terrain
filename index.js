@@ -1,42 +1,51 @@
 // create data.gui
-class parameters {
-    constructor() {
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
-        this.angleX = 0;
-        this.angleY = 0;
-        this.angleZ = 0;
-        this.scaleX = 1;
-        this.scaleY = 1;
-        this.scaleZ = 1;
+let params = {
+    "X": 0,
+    "Y": 0,
+    "Z": 0,
+    "X angle": 0,
+    "Y angle": 0,
+    "Z angle": 0,
+    "X scale": 1,
+    "Y scale": 1,
+    "Z scale": 1,
 
-        this.resolution = 75;
-        this.scaleFactor = 20;
-    }
+    "Light X": 0,
+    "Light Y": 1000,
+    "Light Z": 1000,
+
+    "Resolution": 75,
+    "Scale Factor": 20,
 }
-
-let params = new parameters();
 
 let gui = new dat.GUI();
 
-var guiTransforms = gui.addFolder("Transforms");
+var guiTerrainControls = gui.addFolder("Terrain Controls");
 
-guiTransforms.add(params, "x", -2000, 2000).onChange(setValue);
-guiTransforms.add(params, "y", -2000, 2000).onChange(setValue);
-guiTransforms.add(params, "z", -2000, 2000).onChange(setValue);
-guiTransforms.add(params, "angleX", -360, 360).onChange(setValue);
-guiTransforms.add(params, "angleY", -360, 360).onChange(setValue);
-guiTransforms.add(params, "angleZ", -360, 360).onChange(setValue);
-guiTransforms.add(params, "scaleX", -3, 3).onChange(setValue);
-guiTransforms.add(params, "scaleY", -3, 3).onChange(setValue);
-guiTransforms.add(params, "scaleZ", -3, 3).onChange(setValue);
+guiTerrainControls.add(params, "Resolution", 0, 100).onChange(setValue).step(1);
+guiTerrainControls.add(params, "Scale Factor", 1, 100).onChange(setValue).step(1);
+guiTerrainControls.open();
 
-var guiParameters = gui.addFolder("Parameters");
+var guiCameraControls = gui.addFolder("Camera Controls");
 
-guiParameters.add(params, "resolution", 0,100).onChange(setValue).step(1);
-guiParameters.add(params, "scaleFactor", 1,100).onChange(setValue).step(1);
-guiParameters.open();
+guiCameraControls.add(params, "X", -2000, 2000).onChange(setValue);
+guiCameraControls.add(params, "Y", -2000, 2000).onChange(setValue);
+guiCameraControls.add(params, "Z", -2000, 2000).onChange(setValue);
+guiCameraControls.add(params, "X angle", -360, 360).onChange(setValue);
+guiCameraControls.add(params, "Y angle", -360, 360).onChange(setValue);
+guiCameraControls.add(params, "Z angle", -360, 360).onChange(setValue);
+guiCameraControls.add(params, "X scale", -3, 3).onChange(setValue);
+guiCameraControls.add(params, "Y scale", -3, 3).onChange(setValue);
+guiCameraControls.add(params, "Z scale", -3, 3).onChange(setValue);
+guiCameraControls.open();
+
+var guiLightPosition = gui.addFolder("Light Controls");
+
+guiLightPosition.add(params, "Light X", -3000, 3000).onChange(setValue);
+guiLightPosition.add(params, "Light Y", -3000, 3000).onChange(setValue);
+guiLightPosition.add(params, "Light Z", -3000, 3000).onChange(setValue);
+guiLightPosition.open();
+
 ///////////////////////////////////////////////////////
 
 let canvas = document.getElementById("c");
@@ -48,8 +57,8 @@ if (!gl) {
 
 let terrain = new Terrain(
     24000,
-    params.resolution,
-    params.scaleFactor
+    params["Resolution"],
+    params["Scale Factor"]
 );
 
 let vertexShaderSource = document.getElementById("3d-vertex-shader").text;
@@ -71,6 +80,8 @@ let worldLocation = gl.getUniformLocation(program, "u_world");
 let matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
 let lightLocation = gl.getUniformLocation(program, "u_light");
+
+let light_position = [params["Light X"], params["Light Y"], params["Light Z"]];
 
 let cameraPosition = [0, 5000, 8000];
 let verticies = [];
@@ -106,7 +117,7 @@ function drawScene() {
 
     resize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0.4, 0.4, 0.4, 1);
+    gl.clearColor(0.5, 0.6, 0.7, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.enable(gl.CULL_FACE); // cull the back face by default
@@ -142,8 +153,6 @@ function drawScene() {
     let zNear = 1;
     let zFar = 20000;
     let projectionMatrix = m4.perspective(fieldOfViewInRadians, aspect, zNear, zFar);
-
-    let light_position = [0, 100, 0];
 
     gl.uniform3fv(lightLocation, m4.normalize(light_position));
 
@@ -203,25 +212,29 @@ function setNormals(gl) {
 // change variables when dat.gui is changed
 function setValue() {
 
-    translation[0] = params.x;
-    translation[1] = params.y;
-    translation[2] = params.z;
+    translation[0] = params["X"];
+    translation[1] = params["Y"];
+    translation[2] = params["Z"];
 
-    rotation[0] = degToRad(params.angleX);
-    rotation[1] = degToRad(params.angleY);
-    rotation[2] = degToRad(params.angleZ);
+    rotation[0] = degToRad(params["X angle"]);
+    rotation[1] = degToRad(params["Y angle"]);
+    rotation[2] = degToRad(params["Z angle"]);
 
-    scale[0] = params.scaleX;
-    scale[1] = params.scaleY;
-    scale[2] = params.scaleZ;
+    scale[0] = params["X scale"];
+    scale[1] = params["Y scale"];
+    scale[2] = params["Z scale"];
 
-    if (terrain.resolution != params.resolution
-        || terrain.scaleFactor != params.scaleFactor) {
+    light_position[0] = params["Light X"];
+    light_position[1] = params["Light Y"];
+    light_position[2] = params["Light Z"];
 
-        terrain.resolution = params.resolution;
-        terrain.scaleFactor = params.scaleFactor;
+    if (terrain.resolution != params["Resolution"]
+        || terrain.scaleFactor != params["Scale Factor"]) {
 
-        terrain.gridSize = terrain.size/terrain.resolution;
+        terrain.resolution = params["Resolution"];
+        terrain.scaleFactor = params["Scale Factor"];
+
+        terrain.gridSize = terrain.size / terrain.resolution;
 
         terrain.GenerateTerrain();
 
@@ -240,68 +253,68 @@ document.addEventListener("keydown", function (event) {
     let perp, dist, tempPosition, normalized = [0, 0, 0];
 
     switch (event.key) {
-    case "ArrowDown":
+        case "ArrowDown":
 
-        perp = m4.normalize(cross(cameraPosition, [1, cameraPosition[1], cameraPosition[2]]));
+            perp = m4.normalize(cross(cameraPosition, [1, cameraPosition[1], cameraPosition[2]]));
 
-        dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
+            dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
 
-        tempPosition = [cameraPosition[0] += perp[0] * 40,
+            tempPosition = [cameraPosition[0] += perp[0] * 40,
             cameraPosition[1] += perp[1] * 40,
             cameraPosition[2] += perp[2] * 40,
-        ];
+            ];
 
-        normalized = m4.normalize(tempPosition);
+            normalized = m4.normalize(tempPosition);
 
-        cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
-        break;
+            cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
+            break;
 
-    case "ArrowUp":
-        perp = m4.normalize(cross(cameraPosition, [1, cameraPosition[1], cameraPosition[2]]));
+        case "ArrowUp":
+            perp = m4.normalize(cross(cameraPosition, [1, cameraPosition[1], cameraPosition[2]]));
 
-        dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
+            dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
 
-        tempPosition = [cameraPosition[0] -= perp[0] * 40,
+            tempPosition = [cameraPosition[0] -= perp[0] * 40,
             cameraPosition[1] -= perp[1] * 40,
             cameraPosition[2] -= perp[2] * 40,
-        ];
+            ];
 
-        normalized = m4.normalize(tempPosition);
+            normalized = m4.normalize(tempPosition);
 
-        cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
-        break;
+            cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
+            break;
 
-    case "ArrowLeft":
+        case "ArrowLeft":
 
-        perp = m4.normalize(cross(cameraPosition, [cameraPosition[0], 1, cameraPosition[2]]));
+            perp = m4.normalize(cross(cameraPosition, [cameraPosition[0], 1, cameraPosition[2]]));
 
-        dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
+            dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
 
-        tempPosition = [cameraPosition[0] += perp[0] * 40,
+            tempPosition = [cameraPosition[0] += perp[0] * 40,
             cameraPosition[1] += perp[1] * 40,
             cameraPosition[2] += perp[2] * 40,
-        ];
+            ];
 
-        normalized = m4.normalize(tempPosition);
+            normalized = m4.normalize(tempPosition);
 
-        cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
-        break;
+            cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
+            break;
 
-    case "ArrowRight":
-        perp = m4.normalize(cross(cameraPosition, [cameraPosition[0], 1, cameraPosition[2]]));
+        case "ArrowRight":
+            perp = m4.normalize(cross(cameraPosition, [cameraPosition[0], 1, cameraPosition[2]]));
 
-        dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
+            dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
 
-        tempPosition = [cameraPosition[0] -= perp[0] * 40,
+            tempPosition = [cameraPosition[0] -= perp[0] * 40,
             cameraPosition[1] -= perp[1] * 40,
             cameraPosition[2] -= perp[2] * 40,
-        ];
+            ];
 
-        normalized = m4.normalize(tempPosition);
+            normalized = m4.normalize(tempPosition);
 
-        cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
+            cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
 
-        break;
+            break;
 
 
     }
