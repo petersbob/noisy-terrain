@@ -3,27 +3,31 @@ let params = {
     "X": 0,
     "Y": 0,
     "Z": 0,
-    "X angle": 0,
-    "Y angle": 0,
-    "Z angle": 0,
-    "X scale": 1,
-    "Y scale": 1,
-    "Z scale": 1,
 
     "Light X": 0,
     "Light Y": 1000,
     "Light Z": 1000,
 
+}
+
+let terrainParams = {
     "Resolution": 75,
     "Scale Factor": 20,
+
+    "X scale": 1,
+    "Y scale": 1,
+    "Z scale": 1,
 }
 
 let gui = new dat.GUI();
 
 var guiTerrainControls = gui.addFolder("Terrain Controls");
 
-guiTerrainControls.add(params, "Resolution", 0, 100).onChange(setValue).step(1);
-guiTerrainControls.add(params, "Scale Factor", 1, 100).onChange(setValue).step(1);
+guiTerrainControls.add(terrainParams, "Resolution", 1, 100).onChange(setValue).step(1);
+guiTerrainControls.add(terrainParams, "Scale Factor", 1, 100).onChange(setValue).step(1);
+guiTerrainControls.add(terrainParams, "X scale", -3, 3).onChange(setValue);
+guiTerrainControls.add(terrainParams, "Y scale", -3, 3).onChange(setValue);
+guiTerrainControls.add(terrainParams, "Z scale", -3, 3).onChange(setValue);
 guiTerrainControls.open();
 
 var guiCameraControls = gui.addFolder("Camera Controls");
@@ -31,12 +35,6 @@ var guiCameraControls = gui.addFolder("Camera Controls");
 guiCameraControls.add(params, "X", -2000, 2000).onChange(setValue);
 guiCameraControls.add(params, "Y", -2000, 2000).onChange(setValue);
 guiCameraControls.add(params, "Z", -2000, 2000).onChange(setValue);
-guiCameraControls.add(params, "X angle", -360, 360).onChange(setValue);
-guiCameraControls.add(params, "Y angle", -360, 360).onChange(setValue);
-guiCameraControls.add(params, "Z angle", -360, 360).onChange(setValue);
-guiCameraControls.add(params, "X scale", -3, 3).onChange(setValue);
-guiCameraControls.add(params, "Y scale", -3, 3).onChange(setValue);
-guiCameraControls.add(params, "Z scale", -3, 3).onChange(setValue);
 guiCameraControls.open();
 
 var guiLightPosition = gui.addFolder("Light Controls");
@@ -57,8 +55,8 @@ if (!gl) {
 
 let terrain = new Terrain(
     24000,
-    params["Resolution"],
-    params["Scale Factor"]
+    terrainParams["Resolution"],
+    terrainParams["Scale Factor"]
 );
 
 let vertexShaderSource = document.getElementById("3d-vertex-shader").text;
@@ -92,7 +90,6 @@ let normalBuffer = gl.createBuffer();
 
 let translation = [0, 0, 0];
 let scale = [1, 1, 1];
-let rotation = [degToRad(0), degToRad(0), degToRad(0)];
 let fieldOfViewInRadians = degToRad(60);
 
 generateGeomtry();
@@ -165,10 +162,10 @@ function drawScene() {
     let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
     let worldMatrix = m4.multiply(
-        m4.xRotation(rotation[0]),
-        m4.yRotation(rotation[1])
+        m4.xRotation(0),
+        m4.yRotation(0)
     );
-    worldMatrix = m4.zRotate(worldMatrix, rotation[2]);
+    worldMatrix = m4.zRotate(worldMatrix, 0);
     worldMatrix = m4.scale(worldMatrix, scale[0], scale[1], scale[2]);
     worldMatrix = m4.translate(worldMatrix, translation[0], translation[1], translation[2]);
 
@@ -216,23 +213,19 @@ function setValue() {
     translation[1] = params["Y"];
     translation[2] = params["Z"];
 
-    rotation[0] = degToRad(params["X angle"]);
-    rotation[1] = degToRad(params["Y angle"]);
-    rotation[2] = degToRad(params["Z angle"]);
-
-    scale[0] = params["X scale"];
-    scale[1] = params["Y scale"];
-    scale[2] = params["Z scale"];
+    scale[0] = terrainParams["X scale"];
+    scale[1] = terrainParams["Y scale"];
+    scale[2] = terrainParams["Z scale"];
 
     light_position[0] = params["Light X"];
     light_position[1] = params["Light Y"];
     light_position[2] = params["Light Z"];
 
-    if (terrain.resolution != params["Resolution"]
-        || terrain.scaleFactor != params["Scale Factor"]) {
+    if (terrain.resolution != terrainParams["Resolution"]
+        || terrain.scaleFactor != terrainParams["Scale Factor"]) {
 
-        terrain.resolution = params["Resolution"];
-        terrain.scaleFactor = params["Scale Factor"];
+        terrain.resolution = terrainParams["Resolution"];
+        terrain.scaleFactor = terrainParams["Scale Factor"];
 
         terrain.gridSize = terrain.size / terrain.resolution;
 
