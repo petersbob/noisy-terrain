@@ -1,12 +1,9 @@
 // create data.gui
 let params = {
-    "X": 0,
-    "Y": 0,
-    "Z": 0,
 
     "Light X": 0,
     "Light Y": 1000,
-    "Light Z": 1000,
+    "Light Z": 1000
 
 }
 
@@ -29,13 +26,6 @@ guiTerrainControls.add(terrainParams, "X scale", -3, 3).onChange(setValue);
 guiTerrainControls.add(terrainParams, "Y scale", -3, 3).onChange(setValue);
 guiTerrainControls.add(terrainParams, "Z scale", -3, 3).onChange(setValue);
 guiTerrainControls.open();
-
-var guiCameraControls = gui.addFolder("Camera Controls");
-
-guiCameraControls.add(params, "X", -2000, 2000).onChange(setValue);
-guiCameraControls.add(params, "Y", -2000, 2000).onChange(setValue);
-guiCameraControls.add(params, "Z", -2000, 2000).onChange(setValue);
-guiCameraControls.open();
 
 var guiLightPosition = gui.addFolder("Light Controls");
 
@@ -81,14 +71,14 @@ let lightLocation = gl.getUniformLocation(program, "u_light");
 
 let light_position = [params["Light X"], params["Light Y"], params["Light Z"]];
 
-let cameraPosition = [0, 5000, 8000];
+let cameraPosition = [0,5000,8000];
+
 let verticies = [];
 let normals = [];
 
 let positionBuffer = gl.createBuffer();
 let normalBuffer = gl.createBuffer();
 
-let translation = [0, 0, 0];
 let scale = [1, 1, 1];
 let fieldOfViewInRadians = degToRad(60);
 
@@ -111,6 +101,8 @@ function generateGeomtry() {
 }
 
 function drawScene() {
+
+    console.log("Drawing...");
 
     resize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -154,7 +146,6 @@ function drawScene() {
     gl.uniform3fv(lightLocation, m4.normalize(light_position));
 
     let target = [0, 0, 0];
-
     let cameraMatrix = m4.lookAt(cameraPosition, target);
 
     let viewMatrix = m4.inverse(cameraMatrix);
@@ -167,7 +158,7 @@ function drawScene() {
     );
     worldMatrix = m4.zRotate(worldMatrix, 0);
     worldMatrix = m4.scale(worldMatrix, scale[0], scale[1], scale[2]);
-    worldMatrix = m4.translate(worldMatrix, translation[0], translation[1], translation[2]);
+    worldMatrix = m4.translate(worldMatrix, 0, 0, 0);
 
     let worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix);
 
@@ -209,10 +200,6 @@ function setNormals(gl) {
 // change variables when dat.gui is changed
 function setValue() {
 
-    translation[0] = params["X"];
-    translation[1] = params["Y"];
-    translation[2] = params["Z"];
-
     scale[0] = terrainParams["X scale"];
     scale[1] = terrainParams["Y scale"];
     scale[2] = terrainParams["Z scale"];
@@ -236,82 +223,3 @@ function setValue() {
 
     drawScene();
 }
-
-document.addEventListener("keydown", function (event) {
-
-    function cross(a, b) {
-        return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
-    }
-
-    let perp, dist, tempPosition, normalized = [0, 0, 0];
-
-    switch (event.key) {
-        case "ArrowDown":
-
-            perp = m4.normalize(cross(cameraPosition, [1, cameraPosition[1], cameraPosition[2]]));
-
-            dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
-
-            tempPosition = [cameraPosition[0] += perp[0] * 40,
-            cameraPosition[1] += perp[1] * 40,
-            cameraPosition[2] += perp[2] * 40,
-            ];
-
-            normalized = m4.normalize(tempPosition);
-
-            cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
-            break;
-
-        case "ArrowUp":
-            perp = m4.normalize(cross(cameraPosition, [1, cameraPosition[1], cameraPosition[2]]));
-
-            dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
-
-            tempPosition = [cameraPosition[0] -= perp[0] * 40,
-            cameraPosition[1] -= perp[1] * 40,
-            cameraPosition[2] -= perp[2] * 40,
-            ];
-
-            normalized = m4.normalize(tempPosition);
-
-            cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
-            break;
-
-        case "ArrowLeft":
-
-            perp = m4.normalize(cross(cameraPosition, [cameraPosition[0], 1, cameraPosition[2]]));
-
-            dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
-
-            tempPosition = [cameraPosition[0] += perp[0] * 40,
-            cameraPosition[1] += perp[1] * 40,
-            cameraPosition[2] += perp[2] * 40,
-            ];
-
-            normalized = m4.normalize(tempPosition);
-
-            cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
-            break;
-
-        case "ArrowRight":
-            perp = m4.normalize(cross(cameraPosition, [cameraPosition[0], 1, cameraPosition[2]]));
-
-            dist = Math.sqrt(Math.pow(cameraPosition[0], 2) + Math.pow(cameraPosition[1], 2) + Math.pow(cameraPosition[2], 2));
-
-            tempPosition = [cameraPosition[0] -= perp[0] * 40,
-            cameraPosition[1] -= perp[1] * 40,
-            cameraPosition[2] -= perp[2] * 40,
-            ];
-
-            normalized = m4.normalize(tempPosition);
-
-            cameraPosition = [normalized[0] * dist, normalized[1] * dist, normalized[2] * dist];
-
-            break;
-
-
-    }
-
-    drawScene();
-
-});
