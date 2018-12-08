@@ -38,11 +38,13 @@ guiLightPosition.open();
 
 let fogParams = {
     "Fog Attenuation": 0.00004,
+    "Fog Color": [128, 153, 179],
 };
 
-var guiArtControls = gui.addFolder("Fog Controls");
-guiArtControls.add(fogParams, "Fog Attenuation", 0.00001,0.0001).step(0.00001).onChange(drawScene);
-guiArtControls.open();
+var guiFogControls = gui.addFolder("Fog Controls");
+guiFogControls.add(fogParams, "Fog Attenuation", 0.00001,0.0001).step(0.00001).onChange(drawScene);
+guiFogControls.addColor(fogParams, "Fog Color").onChange(drawScene);
+guiFogControls.open();
 
 //////////////////////////////////////////////////////
 
@@ -82,6 +84,7 @@ let lightLocation = gl.getUniformLocation(program, "u_light");
 let cameraLocation = gl.getUniformLocation(program, "u_camera");
 
 let attenuationLocation = gl.getUniformLocation(program, "u_attenuation");
+let fogColorLocation = gl.getUniformLocation(program, "u_fog_color");
 
 let light_position = [params["Light X"], params["Light Y"], params["Light Z"]];
 
@@ -120,7 +123,7 @@ function drawScene() {
 
     resize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0.5, 0.6, 0.7, 1);
+    gl.clearColor(fogParams["Fog Color"][0]/255, fogParams["Fog Color"][1]/255, fogParams["Fog Color"][2]/255, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.enable(gl.CULL_FACE); // cull the back face by default
@@ -162,6 +165,7 @@ function drawScene() {
     gl.uniform3fv(cameraLocation, cameraPosition);
 
     gl.uniform1f(attenuationLocation, fogParams["Fog Attenuation"]);
+    gl.uniform3fv(fogColorLocation, [fogParams["Fog Color"][0]/255,fogParams["Fog Color"][1]/255,fogParams["Fog Color"][2]/255])
 
     let target = [0, 0, 5000];
     let cameraMatrix = m4.lookAt(cameraPosition, target);
