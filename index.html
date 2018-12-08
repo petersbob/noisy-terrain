@@ -45,7 +45,13 @@
     // to pick one. mediump is a good default
 
     precision mediump float;
+
     uniform vec3 u_light;
+    uniform vec3 u_camera;
+
+    uniform float u_fog_start;
+    uniform float u_fog_end;
+    uniform float u_attenuation;
 
     varying vec3 v_position;
     varying vec3 v_normal;
@@ -96,13 +102,15 @@
 
         color = material_color + light_color*diffuse;
 
-      float fogEnd = 10000.;
-      float fogStart = 1.;
+      float fogDistance = distance(v_position,u_camera);
 
-      float distance = distance(v_position,vec3(0.0,5000.0,8000.0));
-      float fogFactor = exp((-distance*.0001));
+      //float fogEnd = 27700.0;
+      //float fogStart = 1.0;
+      // float fogFactor = (fogEnd - fogDistance) / (fogEnd - fogStart); // linear fog
 
-      vec3 rayDir = normalize(v_position - normalize(vec3(0.,5000.,8000.)));
+      float fogFactor = exp(-1.0*pow((fogDistance*u_attenuation),2.0)); // exponential squared fog
+
+      vec3 rayDir = normalize(v_position - normalize(u_camera));
 
       float sunAmount = max( dot( rayDir, u_light ), 0.0 );
 
@@ -110,7 +118,8 @@
                              vec3(1.0,0.9,0.7), // yellowish
                              pow(sunAmount,3.0) );
 
-        color = mix(fogColor,color,fogFactor);
+       // color = mix(fogColor,color,fogFactor);
+       color = mix(fogColor, color, fogFactor);
 
         gl_FragColor = vec4(color,1.0);
     }

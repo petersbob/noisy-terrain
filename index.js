@@ -5,7 +5,7 @@ let params = {
     "Light Y": 1000,
     "Light Z": 1000
 
-}
+};
 
 let terrainParams = {
     "Resolution": 75,
@@ -14,7 +14,7 @@ let terrainParams = {
     "X scale": 1,
     "Y scale": 1,
     "Z scale": 1,
-}
+};
 
 let gui = new dat.GUI();
 
@@ -34,7 +34,17 @@ guiLightPosition.add(params, "Light Y", -3000, 3000).onChange(setValue);
 guiLightPosition.add(params, "Light Z", -3000, 3000).onChange(setValue);
 guiLightPosition.open();
 
-///////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+
+let fogParams = {
+    "Fog Attenuation": 0.00004,
+};
+
+var guiArtControls = gui.addFolder("Fog Controls");
+guiArtControls.add(fogParams, "Fog Attenuation", 0.00001,0.0001).step(0.00001).onChange(drawScene);
+guiArtControls.open();
+
+//////////////////////////////////////////////////////
 
 let canvas = document.getElementById("c");
 
@@ -69,9 +79,13 @@ let matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
 let lightLocation = gl.getUniformLocation(program, "u_light");
 
+let cameraLocation = gl.getUniformLocation(program, "u_camera");
+
+let attenuationLocation = gl.getUniformLocation(program, "u_attenuation");
+
 let light_position = [params["Light X"], params["Light Y"], params["Light Z"]];
 
-let cameraPosition = [0,5000,8000];
+let cameraPosition = [0,13000,19200];
 
 let verticies = [];
 let normals = [];
@@ -140,12 +154,16 @@ function drawScene() {
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     let zNear = 1;
-    let zFar = 20000;
+    let zFar = 40000;
     let projectionMatrix = m4.perspective(fieldOfViewInRadians, aspect, zNear, zFar);
 
     gl.uniform3fv(lightLocation, m4.normalize(light_position));
 
-    let target = [0, 0, 0];
+    gl.uniform3fv(cameraLocation, cameraPosition);
+
+    gl.uniform1f(attenuationLocation, fogParams["Fog Attenuation"]);
+
+    let target = [0, 0, 5000];
     let cameraMatrix = m4.lookAt(cameraPosition, target);
 
     let viewMatrix = m4.inverse(cameraMatrix);
