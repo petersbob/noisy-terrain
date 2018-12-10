@@ -62,7 +62,7 @@ let terrain = new Terrain(
 );
 
 let vertexShaderSource = document.getElementById("3d-vertex-shader").text;
-let fragmentShaderSource = document.getElementById("3d-fragment-shader").text;
+let fragmentShaderSource = document.getElementById("desert-3d-fragment-shader").text;
 
 let vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
 let fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
