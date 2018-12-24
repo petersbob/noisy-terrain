@@ -8,8 +8,9 @@ let params = {
 };
 
 let terrainParams = {
-    "Resolution": 75,
+    "Resolution": 65,
     "Scale Factor": 20,
+    "Terrain": "Mountain",
 
     "X scale": 1,
     "Y scale": 1,
@@ -22,6 +23,7 @@ var guiTerrainControls = gui.addFolder("Terrain Controls");
 
 guiTerrainControls.add(terrainParams, "Resolution", 1, 100).onChange(setValue).step(1);
 guiTerrainControls.add(terrainParams, "Scale Factor", 1, 100).onChange(setValue).step(1);
+guiTerrainControls.add(terrainParams, "Terrain", ["Mountain", "Desert", "Tundra"]).onChange(changeTerrain);
 guiTerrainControls.add(terrainParams, "X scale", -3, 3).onChange(setValue);
 guiTerrainControls.add(terrainParams, "Y scale", -3, 3).onChange(setValue);
 guiTerrainControls.add(terrainParams, "Z scale", -3, 3).onChange(setValue);
@@ -39,11 +41,14 @@ guiLightPosition.open();
 let fogParams = {
     "Fog Attenuation": 0.00004,
     "Fog Color": [128, 153, 179],
+
+    "Gradient Center": -2,
 };
 
 var guiFogControls = gui.addFolder("Fog Controls");
 guiFogControls.add(fogParams, "Fog Attenuation", 0.00001,0.0001).step(0.00001).onChange(drawScene);
 guiFogControls.addColor(fogParams, "Fog Color").onChange(drawScene);
+guiFogControls.add(fogParams, "Gradient Center", -4,4).step(0.25).onChange(drawScene);
 guiFogControls.open();
 
 //////////////////////////////////////////////////////
@@ -62,7 +67,7 @@ let terrain = new Terrain(
 );
 
 let vertexShaderSource = document.getElementById("3d-vertex-shader").text;
-let fragmentShaderSource = document.getElementById("desert-3d-fragment-shader").text;
+let fragmentShaderSource = document.getElementById("mountain-3d-fragment-shader").text;
 
 let vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
 let fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
@@ -85,6 +90,8 @@ let cameraLocation = gl.getUniformLocation(program, "u_camera");
 
 let attenuationLocation = gl.getUniformLocation(program, "u_attenuation");
 let fogColorLocation = gl.getUniformLocation(program, "u_fog_color");
+
+let gradientCenterLocation = gl.getUniformLocation(program, "u_gradient_center");
 
 let light_position = [params["Light X"], params["Light Y"], params["Light Z"]];
 
@@ -166,6 +173,7 @@ function drawScene() {
 
     gl.uniform1f(attenuationLocation, fogParams["Fog Attenuation"]);
     gl.uniform3fv(fogColorLocation, [fogParams["Fog Color"][0]/255,fogParams["Fog Color"][1]/255,fogParams["Fog Color"][2]/255])
+    gl.uniform1f(gradientCenterLocation, fogParams["Gradient Center"]);
 
     let target = [0, 0, 5000];
     let cameraMatrix = m4.lookAt(cameraPosition, target);
@@ -180,7 +188,7 @@ function drawScene() {
     );
     worldMatrix = m4.zRotate(worldMatrix, 0);
     worldMatrix = m4.scale(worldMatrix, scale[0], scale[1], scale[2]);
-    worldMatrix = m4.translate(worldMatrix, 0, 0, 0);
+    worldMatrix = m4.translate(worldMatrix, -terrain.size/2, 0, -terrain.size/2);
 
     let worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix);
 
@@ -242,6 +250,42 @@ function setValue() {
 
         generateGeomtry();
     }
+
+    drawScene();
+}
+
+function changeTerrain() {
+    let terrainShader;
+
+    if (terrainParams["Terrain"] == "Mountain") {
+        terrainShader = "mountain-3d-fragment-shader";
+    } else if (terrainParams["Terrain"] == "Desert") {
+        terrainShader = "desert-3d-fragment-shader";
+    } else if (terrainParams["Terrain"] == "Tundra") {
+        terrainShader = "tundra-3d-fragment-shader";
+    }
+
+    fragmentShaderSource = document.getElementById(terrainShader).text;
+
+    vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    program = createProgram(gl, vertexShader, fragmentShader);
+
+    // lookup uniforms
+    worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
+    worldLocation = gl.getUniformLocation(program, "u_world");
+
+    matrixLocation = gl.getUniformLocation(program, "u_matrix");
+
+    lightLocation = gl.getUniformLocation(program, "u_light");
+
+    cameraLocation = gl.getUniformLocation(program, "u_camera");
+
+    attenuationLocation = gl.getUniformLocation(program, "u_attenuation");
+    fogColorLocation = gl.getUniformLocation(program, "u_fog_color");
+
+    gradientCenterLocation = gl.getUniformLocation(program, "u_gradient_center");
 
     drawScene();
 }
