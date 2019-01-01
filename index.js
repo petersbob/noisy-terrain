@@ -76,7 +76,7 @@ let program = createProgram(gl, vertexShader, fragmentShader);
 
 // look up where the vertex data needs to go.
 let positionLocation = gl.getAttribLocation(program, "a_position");
-let normalLocation = gl.getAttribLocation(program, "a_normal");
+// let normalLocation = gl.getAttribLocation(program, "a_normal");
 
 // lookup uniforms
 let worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
@@ -98,10 +98,10 @@ let light_position = [params["Light X"], params["Light Y"], params["Light Z"]];
 let cameraPosition = [0,13000,19200];
 
 let verticies = [];
-let normals = [];
+// let normals = [];
 
 let positionBuffer = gl.createBuffer();
-let normalBuffer = gl.createBuffer();
+// let normalBuffer = gl.createBuffer();
 
 let scale = [1, 1, 1];
 let fieldOfViewInRadians = degToRad(60);
@@ -119,9 +119,9 @@ function generateGeomtry() {
     // Put geometry data into buffer
     setGeometry(gl);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    // gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
     // Put the normal data into the buffer
-    setNormals(gl);
+    // setNormals(gl);
 }
 
 function drawScene() {
@@ -152,15 +152,15 @@ function drawScene() {
     gl.vertexAttribPointer(
         positionLocation, size, type, normalize, stride, offset);
 
-    gl.enableVertexAttribArray(normalLocation);
+    // gl.enableVertexAttribArray(normalLocation);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    // gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 
-    type = gl.FLOAT;
-    normalize = false;
-    stride = 0;
-    offset = 0;
-    gl.vertexAttribPointer(normalLocation, size, type, normalize, stride, offset);
+    // type = gl.FLOAT;
+    // normalize = false;
+    // stride = 0;
+    // offset = 0;
+    // gl.vertexAttribPointer(normalLocation, size, type, normalize, stride, offset);
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     let zNear = 1;
@@ -215,17 +215,17 @@ function setGeometry(gl) {
 
 }
 
-function setNormals(gl) {
+// function setNormals(gl) {
 
-    let typedData = new Float32Array(normals);
+//     let typedData = new Float32Array(normals);
 
-    gl.bufferData(
-        gl.ARRAY_BUFFER,
-        typedData,
-        gl.STATIC_DRAW
-    );
+//     gl.bufferData(
+//         gl.ARRAY_BUFFER,
+//         typedData,
+//         gl.STATIC_DRAW
+//     );
 
-}
+// }
 
 // change variables when dat.gui is changed
 function setValue() {
