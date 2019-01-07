@@ -40,29 +40,6 @@
     }
   </script>
 
-  <script id="3d-fragment-shader" type="notjs">
-      // fragment shaders don't have a default precision so we need
-      // to pick one. mediump is a good default
-  
-      precision mediump float;
-  
-      uniform vec3 u_light;
-      uniform vec3 u_camera;
-  
-      uniform float u_fog_start;
-      uniform float u_fog_end;
-      uniform float u_attenuation;
-  
-      uniform vec3 u_fog_color;
-  
-      varying vec3 v_position;
-      varying float v_height;
-
-      void main() {
-        gl_FragColor = vec4(1,0,0,0);
-      }
-  </script>
-
   <script id="mountain-3d-fragment-shader" type="notjs">
     // fragment shaders don't have a default precision so we need
     // to pick one. mediump is a good default
@@ -146,7 +123,6 @@
 
        // color = mix(fogColor,color,fogFactor);
        color = mix(fogColor, color, fogFactor);
-      color = vec3(1.0,0.0,0.0);
 
         gl_FragColor = vec4(color,1.0);
     }

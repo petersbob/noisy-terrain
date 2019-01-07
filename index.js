@@ -76,7 +76,7 @@ let program = createProgram(gl, vertexShader, fragmentShader);
 
 // look up where the vertex data needs to go.
 let positionLocation = gl.getAttribLocation(program, "a_position");
-// let normalLocation = gl.getAttribLocation(program, "a_normal");
+let normalLocation = gl.getAttribLocation(program, "a_normal");
 
 // lookup uniforms
 let worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
@@ -98,30 +98,39 @@ let light_position = [params["Light X"], params["Light Y"], params["Light Z"]];
 let cameraPosition = [0,13000,19200];
 
 let verticies = [];
-// let normals = [];
+let indicies = [];
+let normals = [];
 
 let positionBuffer = gl.createBuffer();
-// let normalBuffer = gl.createBuffer();
+let indexBuffer = gl.createBuffer();
+let normalBuffer = gl.createBuffer();
 
 let scale = [1, 1, 1];
 let fieldOfViewInRadians = degToRad(60);
 
 generateGeomtry();
+//requestAnimationFrame(drawScene);
 drawScene();
 
 function generateGeomtry() {
 
     verticies = terrain.FlatVerticies;
+    indicies = terrain.Indicies;
     normals = terrain.FlatNormals;
+
+    console.log(terrain.FlatNormals);
 
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     // Put geometry data into buffer
     setGeometry(gl);
 
-    // gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    setIndicies(gl);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
     // Put the normal data into the buffer
-    // setNormals(gl);
+    setNormals(gl);
 }
 
 function drawScene() {
@@ -133,7 +142,7 @@ function drawScene() {
     gl.clearColor(fogParams["Fog Color"][0]/255, fogParams["Fog Color"][1]/255, fogParams["Fog Color"][2]/255, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    gl.enable(gl.CULL_FACE); // cull the back face by default
+    //  gl.enable(gl.CULL_FACE); // cull the back face by default
 
     gl.enable(gl.DEPTH_TEST);
 
@@ -152,15 +161,18 @@ function drawScene() {
     gl.vertexAttribPointer(
         positionLocation, size, type, normalize, stride, offset);
 
-    // gl.enableVertexAttribArray(normalLocation);
 
-    // gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
-    // type = gl.FLOAT;
-    // normalize = false;
-    // stride = 0;
-    // offset = 0;
-    // gl.vertexAttribPointer(normalLocation, size, type, normalize, stride, offset);
+    gl.enableVertexAttribArray(normalLocation);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+
+    type = gl.FLOAT;
+    normalize = false;
+    stride = 0;
+    offset = 0;
+    gl.vertexAttribPointer(normalLocation, size, type, normalize, stride, offset);
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     let zNear = 1;
@@ -195,11 +207,19 @@ function drawScene() {
     gl.uniformMatrix4fv(worldViewProjectionLocation, false, worldViewProjectionMatrix);
     gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
 
-    let primitiveType = gl.TRIANGLES;
+    // let primitiveType = gl.TRIANGLES;
+    // type = gl.UNSIGNED_SHORT;
+    // offset = 0;
+    // let count = verticies.length / 3;
+    // gl.drawArrays(primitiveType, 0, count);
+
+
+    const vertexCount = indicies.length;
     type = gl.UNSIGNED_SHORT;
     offset = 0;
-    let count = verticies.length / 3;
-    gl.drawArrays(primitiveType, 0, count);
+    gl.drawElements(gl.TRIANGLE_STRIP, vertexCount, type, offset);
+
+    //requestAnimationFrame(drawScene);
 
 }
 
@@ -215,17 +235,29 @@ function setGeometry(gl) {
 
 }
 
-// function setNormals(gl) {
+function setIndicies(gl) {
 
-//     let typedData = new Float32Array(normals);
+    let typedData = new Uint16Array(indicies);
 
-//     gl.bufferData(
-//         gl.ARRAY_BUFFER,
-//         typedData,
-//         gl.STATIC_DRAW
-//     );
+    gl.bufferData(
+        gl.ELEMENT_ARRAY_BUFFER,
+        typedData,
+        gl.STATIC_DRAW
+    );
 
-// }
+}
+
+function setNormals(gl) {
+
+    let typedData = new Float32Array(normals);
+
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        typedData,
+        gl.STATIC_DRAW
+    );
+
+}
 
 // change variables when dat.gui is changed
 function setValue() {
