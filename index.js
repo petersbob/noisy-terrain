@@ -118,8 +118,6 @@ function generateGeomtry() {
     indicies = terrain.Indicies;
     normals = terrain.FlatNormals;
 
-    console.log(terrain.FlatNormals);
-
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     // Put geometry data into buffer
