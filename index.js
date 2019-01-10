@@ -98,11 +98,9 @@ let light_position = [params["Light X"], params["Light Y"], params["Light Z"]];
 let cameraPosition = [0,13000,19200];
 
 let verticies = [];
-let indicies = [];
 let normals = [];
 
 let positionBuffer = gl.createBuffer();
-let indexBuffer = gl.createBuffer();
 let normalBuffer = gl.createBuffer();
 
 let scale = [1, 1, 1];
@@ -115,18 +113,12 @@ drawScene();
 function generateGeomtry() {
 
     verticies = terrain.FlatVerticies;
-    indicies = terrain.Indicies;
     normals = terrain.FlatNormals;
-
-    console.log(terrain.FlatNormals);
 
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     // Put geometry data into buffer
     setGeometry(gl);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    setIndicies(gl);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
     // Put the normal data into the buffer
@@ -142,7 +134,7 @@ function drawScene() {
     gl.clearColor(fogParams["Fog Color"][0]/255, fogParams["Fog Color"][1]/255, fogParams["Fog Color"][2]/255, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    //  gl.enable(gl.CULL_FACE); // cull the back face by default
+    gl.enable(gl.CULL_FACE); // cull the back face by default
 
     gl.enable(gl.DEPTH_TEST);
 
@@ -158,11 +150,7 @@ function drawScene() {
     let normalize = false;
     let stride = 0;
     let offset = 0;
-    gl.vertexAttribPointer(
-        positionLocation, size, type, normalize, stride, offset);
-
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset);
 
     gl.enableVertexAttribArray(normalLocation);
 
@@ -207,17 +195,11 @@ function drawScene() {
     gl.uniformMatrix4fv(worldViewProjectionLocation, false, worldViewProjectionMatrix);
     gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
 
-    // let primitiveType = gl.TRIANGLES;
-    // type = gl.UNSIGNED_SHORT;
-    // offset = 0;
-    // let count = verticies.length / 3;
-    // gl.drawArrays(primitiveType, 0, count);
-
-
-    const vertexCount = indicies.length;
+    let primitiveType = gl.TRIANGLES;
     type = gl.UNSIGNED_SHORT;
     offset = 0;
-    gl.drawElements(gl.TRIANGLE_STRIP, vertexCount, type, offset);
+    let count = verticies.length / 3;
+    gl.drawArrays(primitiveType, 0, count);
 
     //requestAnimationFrame(drawScene);
 
@@ -232,18 +214,6 @@ function setGeometry(gl) {
         gl.ARRAY_BUFFER,
         typedData,
         gl.STATIC_DRAW);
-
-}
-
-function setIndicies(gl) {
-
-    let typedData = new Uint16Array(indicies);
-
-    gl.bufferData(
-        gl.ELEMENT_ARRAY_BUFFER,
-        typedData,
-        gl.STATIC_DRAW
-    );
 
 }
 
