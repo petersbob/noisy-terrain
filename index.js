@@ -8,9 +8,10 @@ let params = {
 };
 
 let terrainParams = {
-    "Resolution": 65,
+    "Resolution": 64,
     "Scale Factor": 20,
     "Terrain": "Mountain",
+    "Offset Scalar": 1.0,
 
     "X scale": 1,
     "Y scale": 1,
