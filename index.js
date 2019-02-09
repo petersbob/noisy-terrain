@@ -1,57 +1,3 @@
-// create data.gui
-let params = {
-
-    "Light X": 0,
-    "Light Y": 1000,
-    "Light Z": 1000
-
-};
-
-let terrainParams = {
-    "Resolution": 64,
-    "Scale Factor": 20,
-    "Terrain": "Mountain",
-    "Offset Scalar": 1.0,
-
-    "X scale": 1,
-    "Y scale": 1,
-    "Z scale": 1,
-};
-
-let gui = new dat.GUI();
-
-var guiTerrainControls = gui.addFolder("Terrain Controls");
-
-guiTerrainControls.add(terrainParams, "Resolution", 1, 100).onChange(setValue).step(1);
-guiTerrainControls.add(terrainParams, "Scale Factor", 1, 100).onChange(setValue).step(1);
-guiTerrainControls.add(terrainParams, "Terrain", ["Mountain", "Desert", "Tundra"]).onChange(changeTerrain);
-guiTerrainControls.add(terrainParams, "X scale", -3, 3).onChange(setValue);
-guiTerrainControls.add(terrainParams, "Y scale", -3, 3).onChange(setValue);
-guiTerrainControls.add(terrainParams, "Z scale", -3, 3).onChange(setValue);
-guiTerrainControls.open();
-
-var guiLightPosition = gui.addFolder("Light Controls");
-
-guiLightPosition.add(params, "Light X", -3000, 3000).onChange(setValue);
-guiLightPosition.add(params, "Light Y", -3000, 3000).onChange(setValue);
-guiLightPosition.add(params, "Light Z", -3000, 3000).onChange(setValue);
-guiLightPosition.open();
-
-/////////////////////////////////////////////////////
-
-let fogParams = {
-    "Fog Attenuation": 0.00004,
-    "Fog Color": [128, 153, 179],
-
-    "Gradient Center": -2,
-};
-
-var guiFogControls = gui.addFolder("Fog Controls");
-guiFogControls.add(fogParams, "Fog Attenuation", 0.00001,0.0001).step(0.00001).onChange(drawScene);
-guiFogControls.addColor(fogParams, "Fog Color").onChange(drawScene);
-guiFogControls.add(fogParams, "Gradient Center", -4,4).step(0.25).onChange(drawScene);
-guiFogControls.open();
-
 //////////////////////////////////////////////////////
 
 let canvas = document.getElementById("c");
@@ -63,8 +9,7 @@ if (!gl) {
 
 let terrain = new Terrain(
     24000,
-    terrainParams["Resolution"],
-    terrainParams["Scale Factor"]
+    64
 );
 
 let vertexShaderSource = document.getElementById("3d-vertex-shader").text;
@@ -94,7 +39,7 @@ let fogColorLocation = gl.getUniformLocation(program, "u_fog_color");
 
 let gradientCenterLocation = gl.getUniformLocation(program, "u_gradient_center");
 
-let light_position = [params["Light X"], params["Light Y"], params["Light Z"]];
+let light_position = [terrain.guiParams["Light Params"]["Light X"], terrain.guiParams["Light Params"]["Light Y"], terrain.guiParams["Light Params"]["Light Z"]];
 
 let cameraPosition = [0,13000,19200];
 
@@ -107,9 +52,8 @@ let normalBuffer = gl.createBuffer();
 let scale = [1, 1, 1];
 let fieldOfViewInRadians = degToRad(60);
 
-generateGeomtry();
-//requestAnimationFrame(drawScene);
-drawScene();
+requestAnimationFrame(drawScene);
+//drawScene();
 
 function generateGeomtry() {
 
@@ -128,11 +72,11 @@ function generateGeomtry() {
 
 function drawScene() {
 
-    console.log("Drawing...");
+    generateGeomtry();
 
     resize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(fogParams["Fog Color"][0]/255, fogParams["Fog Color"][1]/255, fogParams["Fog Color"][2]/255, 1);
+    gl.clearColor(terrain.guiParams["Fog Params"]["Fog Color"][0]/255, terrain.guiParams["Fog Params"]["Fog Color"][1]/255, terrain.guiParams["Fog Params"]["Fog Color"][2]/255, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.enable(gl.CULL_FACE); // cull the back face by default
@@ -172,9 +116,9 @@ function drawScene() {
 
     gl.uniform3fv(cameraLocation, cameraPosition);
 
-    gl.uniform1f(attenuationLocation, fogParams["Fog Attenuation"]);
-    gl.uniform3fv(fogColorLocation, [fogParams["Fog Color"][0]/255,fogParams["Fog Color"][1]/255,fogParams["Fog Color"][2]/255])
-    gl.uniform1f(gradientCenterLocation, fogParams["Gradient Center"]);
+    gl.uniform1f(attenuationLocation, terrain.guiParams["Fog Params"]["Fog Attenuation"]);
+    gl.uniform3fv(fogColorLocation, [terrain.guiParams["Fog Params"]["Fog Color"][0]/255,terrain.guiParams["Fog Params"]["Fog Color"][1]/255,terrain.guiParams["Fog Params"]["Fog Color"][2]/255])
+    gl.uniform1f(gradientCenterLocation, terrain.guiParams["Fog Params"]["Gradient Center"]);
 
     let target = [0, 0, 5000];
     let cameraMatrix = m4.lookAt(cameraPosition, target);
@@ -202,7 +146,7 @@ function drawScene() {
     let count = verticies.length / 3;
     gl.drawArrays(primitiveType, 0, count);
 
-    //requestAnimationFrame(drawScene);
+    requestAnimationFrame(drawScene);
 
 }
 
@@ -257,38 +201,40 @@ function setValue() {
     drawScene();
 }
 
-function changeTerrain() {
-    let terrainShader;
+// function changeTerrain() {
+//     let terrainShader;
 
-    if (terrainParams["Terrain"] == "Mountain") {
-        terrainShader = "mountain-3d-fragment-shader";
-    } else if (terrainParams["Terrain"] == "Desert") {
-        terrainShader = "desert-3d-fragment-shader";
-    } else if (terrainParams["Terrain"] == "Tundra") {
-        terrainShader = "tundra-3d-fragment-shader";
-    }
+//     if (terrainParams["Terrain"] == "Mountain") {
+//         terrainShader = "mountain-3d-fragment-shader";
+//     } else if (terrainParams["Terrain"] == "Desert") {
+//         terrainShader = "desert-3d-fragment-shader";
+//     } else if (terrainParams["Terrain"] == "Tundra") {
+//         terrainShader = "tundra-3d-fragment-shader";
+//     }
 
-    fragmentShaderSource = document.getElementById(terrainShader).text;
+//     terrain.currentAlgorithm = terrainParams["Algorithm"];
 
-    vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+//     fragmentShaderSource = document.getElementById(terrainShader).text;
 
-    program = createProgram(gl, vertexShader, fragmentShader);
+//     vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+//     fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
-    // lookup uniforms
-    worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
-    worldLocation = gl.getUniformLocation(program, "u_world");
+//     program = createProgram(gl, vertexShader, fragmentShader);
 
-    matrixLocation = gl.getUniformLocation(program, "u_matrix");
+//     // lookup uniforms
+//     worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
+//     worldLocation = gl.getUniformLocation(program, "u_world");
 
-    lightLocation = gl.getUniformLocation(program, "u_light");
+//     matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
-    cameraLocation = gl.getUniformLocation(program, "u_camera");
+//     lightLocation = gl.getUniformLocation(program, "u_light");
 
-    attenuationLocation = gl.getUniformLocation(program, "u_attenuation");
-    fogColorLocation = gl.getUniformLocation(program, "u_fog_color");
+//     cameraLocation = gl.getUniformLocation(program, "u_camera");
 
-    gradientCenterLocation = gl.getUniformLocation(program, "u_gradient_center");
+//     attenuationLocation = gl.getUniformLocation(program, "u_attenuation");
+//     fogColorLocation = gl.getUniformLocation(program, "u_fog_color");
 
-    drawScene();
-}
+//     gradientCenterLocation = gl.getUniformLocation(program, "u_gradient_center");
+
+//     drawScene();
+// }
