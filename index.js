@@ -28,9 +28,6 @@ let light_position = [terrain.guiParams["Light Params"]["Light X"], terrain.guiP
 
 let cameraPosition = [0,13000,19200];
 
-let verticies = [];
-let normals = [];
-
 let scale = [1, 1, 1];
 let fieldOfViewInRadians = degToRad(60);
 
@@ -38,14 +35,11 @@ requestAnimationFrame(drawScene);
 
 function generateGeomtry() {
 
-    verticies = terrain.FlatVerticies;
-    normals = terrain.FlatNormals;
-
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.attribs.a_position.buffer);
     // Put geometry data into buffer
 
-    let typedData = new Float32Array(verticies);
+    let typedData = new Float32Array(arrays.position.data);
 
     gl.bufferData(
         gl.ARRAY_BUFFER,
@@ -55,7 +49,7 @@ function generateGeomtry() {
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.attribs.a_normal.buffer);
     // Put the normal data into the buffer
 
-    typedData = new Float32Array(normals);
+    typedData = new Float32Array(arrays.normal.data);
     
     gl.bufferData(
         gl.ARRAY_BUFFER,
@@ -64,6 +58,10 @@ function generateGeomtry() {
     );
 
 }
+
+let lastUsedProgramInfo = null;
+let lastUsedBufferInfo = null;
+let bindBuffers = false;
 
 function drawScene() {
 
@@ -76,11 +74,28 @@ function drawScene() {
 
     gl.enable(gl.DEPTH_TEST);
 
-    gl.useProgram(programInfo.program);
+    if (programInfo != lastUsedProgramInfo){
+        //console.log("Program Info changed");
+        lastUsedProgramInfo = programInfo;
+        gl.useProgram(programInfo.program);
 
-    generateGeomtry();
+        bindBuffers = true;
+    }
 
-    setAttributes(bufferInfo.attribs, programInfo.attribSetters);
+    if (arrays.position.data != terrain.FlatVerticies || arrays.normal.data != terrain.FlatNormals) {
+        arrays.position.data = terrain.FlatVerticies;
+        arrays.normal.data = terrain.FlatNormals;
+
+        bufferInfo = createBufferInfoFromArrays(gl,arrays);
+    }
+
+    if (bindBuffers || bufferInfo != lastUsedBufferInfo){
+        //console.log("Buffer Info changed");
+        lastUsedBufferInfo = bufferInfo;
+        bindBuffers = false;
+        generateGeomtry();
+        setAttributes(bufferInfo.attribs, programInfo.attribSetters);
+    }
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     let zNear = 1;
@@ -119,7 +134,7 @@ function drawScene() {
     let primitiveType = gl.TRIANGLES;
     type = gl.UNSIGNED_SHORT;
     offset = 0;
-    let count = verticies.length / 3;
+    let count = arrays.position.data.length / 3;
     gl.drawArrays(primitiveType, 0, count);
 
     requestAnimationFrame(drawScene);
