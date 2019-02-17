@@ -11,7 +11,11 @@ let terrain = new Terrain(
     64
 );
 
-let programInfo = createProgramInfo(gl, ["3d-vertex-shader", "mountain-3d-fragment-shader"]);
+let programInfoList = {
+    "Mountain": createProgramInfo(gl, ["3d-vertex-shader", "mountain-3d-fragment-shader"]),
+    "Desert": createProgramInfo(gl, ["3d-vertex-shader", "desert-3d-fragment-shader"]),
+    "Tundra": createProgramInfo(gl, ["3d-vertex-shader", "tundra-3d-fragment-shader"]),
+};
 
 let arrays = {
     position: { numComponents: 3, data: terrain.FlatVerticies},
@@ -59,9 +63,8 @@ function generateGeomtry() {
 
 }
 
-let lastUsedProgramInfo = null;
+let programInfo = null;
 let lastUsedBufferInfo = null;
-let bindBuffers = false;
 
 function drawScene() {
 
@@ -74,12 +77,10 @@ function drawScene() {
 
     gl.enable(gl.DEPTH_TEST);
 
-    if (programInfo != lastUsedProgramInfo){
-        //console.log("Program Info changed");
-        lastUsedProgramInfo = programInfo;
+    if (programInfo != programInfoList[terrain.currentProgramInfo]){
+        console.log("Program Info changed");
+        programInfo = programInfoList[terrain.currentProgramInfo];
         gl.useProgram(programInfo.program);
-
-        bindBuffers = true;
     }
 
     if (arrays.position.data != terrain.FlatVerticies || arrays.normal.data != terrain.FlatNormals) {
@@ -89,10 +90,9 @@ function drawScene() {
         bufferInfo = createBufferInfoFromArrays(gl,arrays);
     }
 
-    if (bindBuffers || bufferInfo != lastUsedBufferInfo){
-        //console.log("Buffer Info changed");
+    if (bufferInfo != lastUsedBufferInfo){
+        console.log("Buffer Info changed");
         lastUsedBufferInfo = bufferInfo;
-        bindBuffers = false;
         generateGeomtry();
         setAttributes(bufferInfo.attribs, programInfo.attribSetters);
     }
@@ -140,41 +140,3 @@ function drawScene() {
     requestAnimationFrame(drawScene);
 
 }
-
-// function changeTerrain() {
-//     let terrainShader;
-
-//     if (terrainParams["Terrain"] == "Mountain") {
-//         terrainShader = "mountain-3d-fragment-shader";
-//     } else if (terrainParams["Terrain"] == "Desert") {
-//         terrainShader = "desert-3d-fragment-shader";
-//     } else if (terrainParams["Terrain"] == "Tundra") {
-//         terrainShader = "tundra-3d-fragment-shader";
-//     }
-
-//     terrain.currentAlgorithm = terrainParams["Algorithm"];
-
-//     fragmentShaderSource = document.getElementById(terrainShader).text;
-
-//     vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-//     fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-
-//     program = createProgram(gl, vertexShader, fragmentShader);
-
-//     // lookup uniforms
-//     worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
-//     worldLocation = gl.getUniformLocation(program, "u_world");
-
-//     matrixLocation = gl.getUniformLocation(program, "u_matrix");
-
-//     lightLocation = gl.getUniformLocation(program, "u_light");
-
-//     cameraLocation = gl.getUniformLocation(program, "u_camera");
-
-//     attenuationLocation = gl.getUniformLocation(program, "u_attenuation");
-//     fogColorLocation = gl.getUniformLocation(program, "u_fog_color");
-
-//     gradientCenterLocation = gl.getUniformLocation(program, "u_gradient_center");
-
-//     drawScene();
-// }
