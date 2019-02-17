@@ -4,304 +4,304 @@
     <title>Terrain Generator</title>
   </head>
 
-<body>
-  <style>
-  body {
-  margin: 0;
-  overflow: hidden;
-  }
-  </style>
-  <canvas id="c"></canvas>
-  <script type="text/javascript" src="lib/dat.gui.min.js"></script>
-  <script type="text/javascript" src="lib/Algorithms.js"></script>
-  <script type="text/javascript" src="lib/Terrain.js"></script>
-  <script type="text/javascript" src="lib/util.js"></script>
-  <script type="text/javascript" src="lib/math.js"></script>
+  <body>
+    <style>
+    body {
+    margin: 0;
+    overflow: hidden;
+    }
+    </style>
+    <canvas id="c"></canvas>
+    <script type="text/javascript" src="lib/dat.gui.min.js"></script>
+    <script type="text/javascript" src="lib/Algorithms.js"></script>
+    <script type="text/javascript" src="lib/Terrain.js"></script>
+    <script type="text/javascript" src="lib/util.js"></script>
+    <script type="text/javascript" src="lib/math.js"></script>
 
-  <script id="3d-vertex-shader" type="notjs">
-    // an attribute will receive data from a buffer
-    attribute vec4 a_position;
-    attribute vec3 a_normal;
-    
-    uniform mat4 u_worldViewProjection;
-    uniform mat4 u_world;
-    
-    varying vec3 v_position;
-    varying vec3 v_normal;
-    varying float v_height;
-    
-    void main() {
-    
-      v_position = a_position.xyz;
-      v_normal = mat3(u_world) * a_normal;
-      v_height = a_position.y;
-    
-      gl_Position = u_worldViewProjection * a_position;
-    
-    }
-  </script>
+    <script id="3d-vertex-shader" type="notjs">
+      // an attribute will receive data from a buffer
+      attribute vec4 a_position;
+      attribute vec3 a_normal;
+      
+      uniform mat4 u_worldViewProjection;
+      uniform mat4 u_world;
+      
+      varying vec3 v_position;
+      varying vec3 v_normal;
+      varying float v_height;
+      
+      void main() {
+      
+        v_position = a_position.xyz;
+        v_normal = mat3(u_world) * a_normal;
+        v_height = a_position.y;
+      
+        gl_Position = u_worldViewProjection * a_position;
+      
+      }
+    </script>
 
-  <script id="mountain-3d-fragment-shader" type="notjs">
-    // fragment shaders don't have a default precision so we need
-    // to pick one. mediump is a good default
-    
-    precision mediump float;
-    
-    uniform vec3 u_light;
-    uniform vec3 u_camera;
-    
-    uniform float u_fog_start;
-    uniform float u_fog_end;
-    uniform float u_attenuation;
-    
-    uniform vec3 u_fog_color;
-    
-    varying vec3 v_position;
-    varying vec3 v_normal;
-    varying float v_height;
-    
-    float rand(vec2 co) {
-      return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
-    }
-    
-    void main() {
-    
-      vec3 green = vec3(0.6, 0.64, 0.07);
-      vec3 red = vec3(0.3, 0.0, 0.0);
-      vec3 grey = vec3(0.3, 0.3, 0.3);
-      vec3 white = vec3(1., 1., 1.);
-    
-      vec3 color = vec3(0, 0, 0);
-    
-      float gradientCenter = -2. + rand(v_normal.xy);
-      float gradientAmplitude = 0.25 + rand(v_normal.zy);
-    
-      vec3 material_color = mix(
-        green,
-        grey,
-        smoothstep(
-          gradientCenter - gradientAmplitude,
-          gradientCenter + gradientAmplitude,
-          v_height / 600.
-        )
-      );
-    
-      gradientCenter += 3.;
-    
-      material_color = mix(
-        material_color,
-        white,
-        smoothstep(
-          gradientCenter - gradientAmplitude,
-          gradientCenter + gradientAmplitude,
-          v_height / 600.
-        )
-      );
-    
-      vec3 light_color = vec3(0.5, 0.5, 0.5);
-    
-      vec3 normal = normalize(v_normal);
-    
-      float diffuse = dot(normal, u_light);
-    
-      color = material_color + light_color * diffuse;
-    
-      float fogDistance = distance(v_position, u_camera);
-    
-      //float fogEnd = 27700.0;
-      //float fogStart = 1.0;
-      // float fogFactor = (fogEnd - fogDistance) / (fogEnd - fogStart); // linear fog
-    
-      float fogFactor = exp(-1.0 * pow((fogDistance * u_attenuation), 2.0)); // exponential squared fog
-    
-      vec3 rayDir = normalize(v_position - normalize(u_camera));
-    
-      float sunAmount = max(dot(rayDir, u_light), 0.0);
-    
-      vec3 fogColor = mix(u_fog_color, // bluish
-        vec3(1.0, 0.9, 0.7), // yellowish
-        pow(sunAmount, 3.0));
-    
-      // color = mix(fogColor,color,fogFactor);
-      color = mix(fogColor, color, fogFactor);
-    
-      gl_FragColor = vec4(color, 1.0);
-    }
-  </script>
+    <script id="mountain-3d-fragment-shader" type="notjs">
+      // fragment shaders don't have a default precision so we need
+      // to pick one. mediump is a good default
+      
+      precision mediump float;
+      
+      uniform vec3 u_light;
+      uniform vec3 u_camera;
+      
+      uniform float u_fog_start;
+      uniform float u_fog_end;
+      uniform float u_attenuation;
+      
+      uniform vec3 u_fog_color;
+      
+      varying vec3 v_position;
+      varying vec3 v_normal;
+      varying float v_height;
+      
+      float rand(vec2 co) {
+        return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+      }
+      
+      void main() {
+      
+        vec3 green = vec3(0.6, 0.64, 0.07);
+        vec3 red = vec3(0.3, 0.0, 0.0);
+        vec3 grey = vec3(0.3, 0.3, 0.3);
+        vec3 white = vec3(1., 1., 1.);
+      
+        vec3 color = vec3(0, 0, 0);
+      
+        float gradientCenter = -2. + rand(v_normal.xy);
+        float gradientAmplitude = 0.25 + rand(v_normal.zy);
+      
+        vec3 material_color = mix(
+          green,
+          grey,
+          smoothstep(
+            gradientCenter - gradientAmplitude,
+            gradientCenter + gradientAmplitude,
+            v_height / 600.
+          )
+        );
+      
+        gradientCenter += 3.;
+      
+        material_color = mix(
+          material_color,
+          white,
+          smoothstep(
+            gradientCenter - gradientAmplitude,
+            gradientCenter + gradientAmplitude,
+            v_height / 600.
+          )
+        );
+      
+        vec3 light_color = vec3(0.5, 0.5, 0.5);
+      
+        vec3 normal = normalize(v_normal);
+      
+        float diffuse = dot(normal, u_light);
+      
+        color = material_color + light_color * diffuse;
+      
+        float fogDistance = distance(v_position, u_camera);
+      
+        //float fogEnd = 27700.0;
+        //float fogStart = 1.0;
+        // float fogFactor = (fogEnd - fogDistance) / (fogEnd - fogStart); // linear fog
+      
+        float fogFactor = exp(-1.0 * pow((fogDistance * u_attenuation), 2.0)); // exponential squared fog
+      
+        vec3 rayDir = normalize(v_position - normalize(u_camera));
+      
+        float sunAmount = max(dot(rayDir, u_light), 0.0);
+      
+        vec3 fogColor = mix(u_fog_color, // bluish
+          vec3(1.0, 0.9, 0.7), // yellowish
+          pow(sunAmount, 3.0));
+      
+        // color = mix(fogColor,color,fogFactor);
+        color = mix(fogColor, color, fogFactor);
+      
+        gl_FragColor = vec4(color, 1.0);
+      }
+    </script>
 
-  <script id="desert-3d-fragment-shader" type="notjs">
-    // fragment shaders don't have a default precision so we need
-    // to pick one. mediump is a good default
-    
-    precision mediump float;
-    
-    uniform vec3 u_light;
-    uniform vec3 u_camera;
-    
-    uniform float u_fog_start;
-    uniform float u_fog_end;
-    uniform float u_attenuation;
-    
-    uniform vec3 u_fog_color;
-    
-    varying vec3 v_position;
-    varying vec3 v_normal;
-    varying float v_height;
-    
-    float rand(vec2 co) {
-      return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
-    }
-    
-    float fbm(vec2 p) {
-      float f = 0.0;
-      f += 0.5000 * rand(p);
-      p *= 2.02;
-      f += 0.2500 * rand(p);
-      p *= 2.03;
-      f += 0.1250 * rand(p);
-      p *= 2.04;
-      f += 0.0625 * rand(p);
-      p *= 2.05;
-      f /= 0.9375;
-      return f;
-    }
-    
-    void main() {
-    
-      vec3 tan = vec3(0.98, 0.82, 0.51);
-      vec3 darkTan = vec3(.84, 0.62, .38);
-    
-      vec3 color = vec3(0, 0, 0);
-    
-      float darkTanValue = fbm(v_normal.xz);
-      vec3 material_color = mix(tan, darkTan, step(0.7, darkTanValue));
-    
-      vec3 light_color = vec3(0.5, 0.5, 0.5);
-    
-      vec3 normal = normalize(v_normal);
-    
-      float diffuse = dot(normal, u_light);
-    
-      color = material_color + light_color * diffuse;
-    
-      float fogDistance = distance(v_position, u_camera);
-    
-      //float fogEnd = 27700.0;
-      //float fogStart = 1.0;
-      // float fogFactor = (fogEnd - fogDistance) / (fogEnd - fogStart); // linear fog
-    
-      float fogFactor = exp(-1.0 * pow((fogDistance * u_attenuation), 2.0)); // exponential squared fog
-    
-      vec3 rayDir = normalize(v_position - normalize(u_camera));
-    
-      float sunAmount = max(dot(rayDir, u_light), 0.0);
-    
-      vec3 fogColor = mix(u_fog_color, // bluish
-        vec3(1.0, 0.9, 0.7), // yellowish
-        pow(sunAmount, 3.0));
-    
-      // color = mix(fogColor,color,fogFactor);
-      color = mix(fogColor, color, fogFactor);
-    
-      gl_FragColor = vec4(color, 1.0);
-    }
-  </script>
+    <script id="desert-3d-fragment-shader" type="notjs">
+      // fragment shaders don't have a default precision so we need
+      // to pick one. mediump is a good default
+      
+      precision mediump float;
+      
+      uniform vec3 u_light;
+      uniform vec3 u_camera;
+      
+      uniform float u_fog_start;
+      uniform float u_fog_end;
+      uniform float u_attenuation;
+      
+      uniform vec3 u_fog_color;
+      
+      varying vec3 v_position;
+      varying vec3 v_normal;
+      varying float v_height;
+      
+      float rand(vec2 co) {
+        return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+      }
+      
+      float fbm(vec2 p) {
+        float f = 0.0;
+        f += 0.5000 * rand(p);
+        p *= 2.02;
+        f += 0.2500 * rand(p);
+        p *= 2.03;
+        f += 0.1250 * rand(p);
+        p *= 2.04;
+        f += 0.0625 * rand(p);
+        p *= 2.05;
+        f /= 0.9375;
+        return f;
+      }
+      
+      void main() {
+      
+        vec3 tan = vec3(0.98, 0.82, 0.51);
+        vec3 darkTan = vec3(.84, 0.62, .38);
+      
+        vec3 color = vec3(0, 0, 0);
+      
+        float darkTanValue = fbm(v_normal.xz);
+        vec3 material_color = mix(tan, darkTan, step(0.7, darkTanValue));
+      
+        vec3 light_color = vec3(0.5, 0.5, 0.5);
+      
+        vec3 normal = normalize(v_normal);
+      
+        float diffuse = dot(normal, u_light);
+      
+        color = material_color + light_color * diffuse;
+      
+        float fogDistance = distance(v_position, u_camera);
+      
+        //float fogEnd = 27700.0;
+        //float fogStart = 1.0;
+        // float fogFactor = (fogEnd - fogDistance) / (fogEnd - fogStart); // linear fog
+      
+        float fogFactor = exp(-1.0 * pow((fogDistance * u_attenuation), 2.0)); // exponential squared fog
+      
+        vec3 rayDir = normalize(v_position - normalize(u_camera));
+      
+        float sunAmount = max(dot(rayDir, u_light), 0.0);
+      
+        vec3 fogColor = mix(u_fog_color, // bluish
+          vec3(1.0, 0.9, 0.7), // yellowish
+          pow(sunAmount, 3.0));
+      
+        // color = mix(fogColor,color,fogFactor);
+        color = mix(fogColor, color, fogFactor);
+      
+        gl_FragColor = vec4(color, 1.0);
+      }
+    </script>
 
-  <script id="tundra-3d-fragment-shader" type="notjs">
-    // fragment shaders don't have a default precision so we need
-    // to pick one. mediump is a good default
-    
-    precision mediump float;
-    
-    uniform vec3 u_light;
-    uniform vec3 u_camera;
-    
-    uniform float u_fog_start;
-    uniform float u_fog_end;
-    uniform float u_attenuation;
-    
-    uniform vec3 u_fog_color;
-    
-    uniform float u_gradient_center;
-    
-    varying vec3 v_position;
-    varying vec3 v_normal;
-    varying float v_height;
-    
-    float rand(vec2 co) {
-      return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
-    }
-    
-    void main() {
-    
-      vec3 green = vec3(0.57, 0.39, 0.17);
-      //vec3 red = vec3(0.6,0.0,0.0);
-      vec3 red = vec3(0.35, 0.29, 0.06);
-      vec3 grey = vec3(0.3, 0.3, 0.3);
-      vec3 white = vec3(1., 1., 1.);
-    
-      vec3 color = vec3(0, 0, 0);
-    
-      float gradientCenter = u_gradient_center + rand(v_normal.xy);
-      float gradientAmplitude = 0.25 + rand(v_normal.zy);
-    
-      red = mix(green, red, step(0.9, rand(v_normal.xz)));
-    
-      vec3 material_color = mix(
-        red,
-        grey,
-        smoothstep(
-          gradientCenter - gradientAmplitude,
-          gradientCenter + gradientAmplitude,
-          v_height / 600.
-        )
-      );
-    
-      gradientCenter += 3.;
-    
-      material_color = mix(
-        material_color,
-        white,
-        smoothstep(
-          gradientCenter - gradientAmplitude,
-          gradientCenter + gradientAmplitude,
-          v_height / 600.
-        )
-      );
-    
-      vec3 light_color = vec3(0.5, 0.5, 0.5);
-    
-      vec3 normal = normalize(v_normal);
-    
-      float diffuse = dot(normal, u_light);
-    
-      color = material_color + light_color * diffuse;
-    
-      float fogDistance = distance(v_position, u_camera);
-    
-      //float fogEnd = 27700.0;
-      //float fogStart = 1.0;
-      // float fogFactor = (fogEnd - fogDistance) / (fogEnd - fogStart); // linear fog
-    
-      float fogFactor = exp(-1.0 * pow((fogDistance * u_attenuation), 2.0)); // exponential squared fog
-    
-      vec3 rayDir = normalize(v_position - normalize(u_camera));
-    
-      float sunAmount = max(dot(rayDir, u_light), 0.0);
-    
-      vec3 fogColor = mix(u_fog_color, // bluish
-        vec3(1.0, 0.9, 0.7), // yellowish
-        pow(sunAmount, 3.0));
-    
-      // color = mix(fogColor,color,fogFactor);
-      color = mix(fogColor, color, fogFactor);
-    
-      gl_FragColor = vec4(color, 1.0);
-    }
-  </script>
+    <script id="tundra-3d-fragment-shader" type="notjs">
+      // fragment shaders don't have a default precision so we need
+      // to pick one. mediump is a good default
+      
+      precision mediump float;
+      
+      uniform vec3 u_light;
+      uniform vec3 u_camera;
+      
+      uniform float u_fog_start;
+      uniform float u_fog_end;
+      uniform float u_attenuation;
+      
+      uniform vec3 u_fog_color;
+      
+      uniform float u_gradient_center;
+      
+      varying vec3 v_position;
+      varying vec3 v_normal;
+      varying float v_height;
+      
+      float rand(vec2 co) {
+        return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+      }
+      
+      void main() {
+      
+        vec3 green = vec3(0.57, 0.39, 0.17);
+        //vec3 red = vec3(0.6,0.0,0.0);
+        vec3 red = vec3(0.35, 0.29, 0.06);
+        vec3 grey = vec3(0.3, 0.3, 0.3);
+        vec3 white = vec3(1., 1., 1.);
+      
+        vec3 color = vec3(0, 0, 0);
+      
+        float gradientCenter = u_gradient_center + rand(v_normal.xy);
+        float gradientAmplitude = 0.25 + rand(v_normal.zy);
+      
+        red = mix(green, red, step(0.9, rand(v_normal.xz)));
+      
+        vec3 material_color = mix(
+          red,
+          grey,
+          smoothstep(
+            gradientCenter - gradientAmplitude,
+            gradientCenter + gradientAmplitude,
+            v_height / 600.
+          )
+        );
+      
+        gradientCenter += 3.;
+      
+        material_color = mix(
+          material_color,
+          white,
+          smoothstep(
+            gradientCenter - gradientAmplitude,
+            gradientCenter + gradientAmplitude,
+            v_height / 600.
+          )
+        );
+      
+        vec3 light_color = vec3(0.5, 0.5, 0.5);
+      
+        vec3 normal = normalize(v_normal);
+      
+        float diffuse = dot(normal, u_light);
+      
+        color = material_color + light_color * diffuse;
+      
+        float fogDistance = distance(v_position, u_camera);
+      
+        //float fogEnd = 27700.0;
+        //float fogStart = 1.0;
+        // float fogFactor = (fogEnd - fogDistance) / (fogEnd - fogStart); // linear fog
+      
+        float fogFactor = exp(-1.0 * pow((fogDistance * u_attenuation), 2.0)); // exponential squared fog
+      
+        vec3 rayDir = normalize(v_position - normalize(u_camera));
+      
+        float sunAmount = max(dot(rayDir, u_light), 0.0);
+      
+        vec3 fogColor = mix(u_fog_color, // bluish
+          vec3(1.0, 0.9, 0.7), // yellowish
+          pow(sunAmount, 3.0));
+      
+        // color = mix(fogColor,color,fogFactor);
+        color = mix(fogColor, color, fogFactor);
+      
+        gl_FragColor = vec4(color, 1.0);
+      }
+    </script>
 
-  <script src="index.js"></script>
+    <script src="index.js"></script>
 
-</body>
+  </body>
   
 </html>
