@@ -105,7 +105,6 @@ function drawScene() {
     uniforms.u_attenuation = terrain.guiParams["Fog Params"]["Fog Attenuation"];
 
     uniforms.u_fog_color = [terrain.guiParams["Fog Params"]["Fog Color"][0]/255,terrain.guiParams["Fog Params"]["Fog Color"][1]/255,terrain.guiParams["Fog Params"]["Fog Color"][2]/255];
-    uniforms.u_gradient_center = terrain.guiParams["Fog Params"]["Gradient Center"];
 
     let target = [0, 0, 5000];
     let cameraMatrix = m4.lookAt(cameraPosition, target);

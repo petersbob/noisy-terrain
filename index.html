@@ -73,7 +73,7 @@
       
         vec3 color = vec3(0, 0, 0);
       
-        float gradientCenter = -2. + rand(v_normal.xy);
+        float gradientCenter = -2.0 + rand(v_normal.xy);
         float gradientAmplitude = 0.25 + rand(v_normal.zy);
       
         vec3 material_color = mix(
@@ -222,8 +222,6 @@
       
       uniform vec3 u_fog_color;
       
-      uniform float u_gradient_center;
-      
       varying vec4 v_position;
       varying vec3 v_normal;
       varying float v_height;
@@ -242,7 +240,7 @@
       
         vec3 color = vec3(0, 0, 0);
       
-        float gradientCenter = u_gradient_center + rand(v_normal.xy);
+        float gradientCenter = -2.0 + rand(v_normal.xy);
         float gradientAmplitude = 0.25 + rand(v_normal.zy);
       
         red = mix(green, red, step(0.9, rand(v_normal.xz)));
