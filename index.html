@@ -26,13 +26,13 @@
       uniform mat4 u_worldViewProjection;
       uniform mat4 u_world;
       
-      varying vec3 v_position;
+      varying vec4 v_position;
       varying vec3 v_normal;
       varying float v_height;
       
       void main() {
       
-        v_position = a_position.xyz;
+        v_position = u_world * a_position;
         v_normal = mat3(u_world) * a_normal;
         v_height = a_position.y;
       
@@ -56,7 +56,7 @@
       
       uniform vec3 u_fog_color;
       
-      varying vec3 v_position;
+      varying vec4 v_position;
       varying vec3 v_normal;
       varying float v_height;
       
@@ -106,7 +106,7 @@
       
         color = material_color + light_color * diffuse;
       
-        float fogDistance = distance(v_position, u_camera);
+        float fogDistance = distance(v_position.xyz, u_camera);
       
         //float fogEnd = 27700.0;
         //float fogStart = 1.0;
@@ -114,7 +114,7 @@
       
         float fogFactor = exp(-1.0 * pow((fogDistance * u_attenuation), 2.0)); // exponential squared fog
       
-        vec3 rayDir = normalize(v_position - normalize(u_camera));
+        vec3 rayDir = normalize(v_position.xyz - normalize(u_camera));
       
         float sunAmount = max(dot(rayDir, u_light), 0.0);
       
@@ -144,7 +144,7 @@
       
       uniform vec3 u_fog_color;
       
-      varying vec3 v_position;
+      varying vec4 v_position;
       varying vec3 v_normal;
       varying float v_height;
       
@@ -184,7 +184,7 @@
       
         color = material_color + light_color * diffuse;
       
-        float fogDistance = distance(v_position, u_camera);
+        float fogDistance = distance(v_position.xyz, u_camera);
       
         //float fogEnd = 27700.0;
         //float fogStart = 1.0;
@@ -192,7 +192,7 @@
       
         float fogFactor = exp(-1.0 * pow((fogDistance * u_attenuation), 2.0)); // exponential squared fog
       
-        vec3 rayDir = normalize(v_position - normalize(u_camera));
+        vec3 rayDir = normalize(v_position.xyz - normalize(u_camera));
       
         float sunAmount = max(dot(rayDir, u_light), 0.0);
       
@@ -224,7 +224,7 @@
       
       uniform float u_gradient_center;
       
-      varying vec3 v_position;
+      varying vec4 v_position;
       varying vec3 v_normal;
       varying float v_height;
       
@@ -277,7 +277,7 @@
       
         color = material_color + light_color * diffuse;
       
-        float fogDistance = distance(v_position, u_camera);
+        float fogDistance = distance(v_position.xyz, u_camera);
       
         //float fogEnd = 27700.0;
         //float fogStart = 1.0;
@@ -285,7 +285,7 @@
       
         float fogFactor = exp(-1.0 * pow((fogDistance * u_attenuation), 2.0)); // exponential squared fog
       
-        vec3 rayDir = normalize(v_position - normalize(u_camera));
+        vec3 rayDir = normalize(v_position.xyz - normalize(u_camera));
       
         float sunAmount = max(dot(rayDir, u_light), 0.0);
       
