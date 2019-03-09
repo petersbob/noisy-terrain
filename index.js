@@ -28,8 +28,6 @@ let uniforms = {
     u_camera: [0,13000,19200],
 };
 
-let light_position = [terrain.guiParams["Light Params"]["Light X"], terrain.guiParams["Light Params"]["Light Y"], terrain.guiParams["Light Params"]["Light Z"]];
-
 let cameraPosition = [0,13000,19200];
 
 let scale = [1, 1, 1];
@@ -102,7 +100,7 @@ function drawScene() {
     let zFar = 40000;
     let projectionMatrix = m4.perspective(fieldOfViewInRadians, aspect, zNear, zFar);
 
-    uniforms.u_light = m4.normalize(light_position)
+    uniforms.u_light = m4.normalize([terrain.guiParams["Light Params"]["Light X"], terrain.guiParams["Light Params"]["Light Y"], terrain.guiParams["Light Params"]["Light Z"]]);
 
     uniforms.u_attenuation = terrain.guiParams["Fog Params"]["Fog Attenuation"];
 
