@@ -5,6 +5,6 @@ I originally began this project while on a mission to learn WebGL. Everything is
 
 You can view it in its current form here: https://petersbob.github.io/noisy-terrain/
 
-![Perlin Noise](http://petersbob.github.io/images/perlin-noise.png)
-![Value Noise](http://petersbob.github.io/images/value-noise.png)
-![Diamond Square](http://petersbob.github.io/images/diamond-square.png)
+![Value Noise](http://petersbob.github.io/images/value-noise2.png)
+![Perlin Noise](http://petersbob.github.io/images/perlin-noise2.png)
+![Diamond Square](http://petersbob.github.io/images/diamond-square2.png)
