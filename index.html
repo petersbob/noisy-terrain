@@ -6,10 +6,10 @@
 
   <body>
     <style>
-    body {
-    margin: 0;
-    overflow: hidden;
-    }
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
     </style>
     <canvas id="c"></canvas>
     <script type="text/javascript" src="lib/dat.gui.min.js"></script>
@@ -158,9 +158,6 @@
     </script>
 
     <script id="tundra-3d-fragment-shader" type="notjs">
-      // fragment shaders don't have a default precision so we need
-      // to pick one. mediump is a good default
-      
       precision mediump float;
       
       uniform vec3 u_light;

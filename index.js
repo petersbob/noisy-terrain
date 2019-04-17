@@ -3,7 +3,7 @@ let canvas = document.getElementById("c");
 
 let gl = canvas.getContext("webgl");
 if (!gl) {
-    console.log("WebGL not working");
+    console.log("WebGL is not working");
 }
 
 let terrain = new Terrain(
@@ -39,8 +39,8 @@ function generateGeomtry() {
 
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.attribs.a_position.buffer);
-    // Put geometry data into buffer
 
+    // Put geometry data into buffer
     let typedData = new Float32Array(arrays.position.data);
 
     gl.bufferData(
@@ -49,8 +49,8 @@ function generateGeomtry() {
         gl.STATIC_DRAW);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.attribs.a_normal.buffer);
-    // Put the normal data into the buffer
 
+    // Put the normal data into the buffer
     typedData = new Float32Array(arrays.normal.data);
     
     gl.bufferData(
@@ -76,7 +76,6 @@ function drawScene() {
     gl.enable(gl.DEPTH_TEST);
 
     if (programInfo != programInfoList[terrain.currentProgramInfo]){
-        console.log("Program Info changed");
         programInfo = programInfoList[terrain.currentProgramInfo];
         gl.useProgram(programInfo.program);
     }
@@ -89,7 +88,6 @@ function drawScene() {
     }
 
     if (bufferInfo != lastUsedBufferInfo){
-        console.log("Buffer Info changed");
         lastUsedBufferInfo = bufferInfo;
         generateGeomtry();
         setAttributes(bufferInfo.attribs, programInfo.attribSetters);
@@ -129,8 +127,6 @@ function drawScene() {
     setUniforms(uniforms, programInfo.uniformSetters);
 
     let primitiveType = gl.TRIANGLES;
-    type = gl.UNSIGNED_SHORT;
-    offset = 0;
     let count = arrays.position.data.length / 3;
     gl.drawArrays(primitiveType, 0, count);
 
